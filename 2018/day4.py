@@ -1,52 +1,106 @@
-# [1518-02-21 00:01] Guard #2129 begins shift
-# [1518-04-26 00:26] falls asleep
-# [1518-11-15 00:02] Guard #401 begins shift
-# [1518-05-14 00:59] wakes up
-# [1518-06-10 00:58] wakes up
-# [1518-08-09 00:33] wakes up
-# [1518-09-18 00:31] falls asleep
-# [1518-05-25 00:03] Guard #3301 begins shift
-# [1518-07-12 00:59] wakes up
-# [1518-10-30 00:56] wakes up
-# [1518-07-03 00:56] wakes up
-# [1518-11-03 00:28] wakes up
-# [1518-08-13 00:42] wakes up
+import os, sys, collections
+input = [line.strip() for line in open(
+    os.path.join(sys.path[0], "day4.input"), 'r')]
+input.sort()
 
-# [1518-02-03 23:57] Guard #509 begins shift
-# [1518-02-04 00:13] falls asleep
-# [1518-02-04 00:14] wakes up
-# [1518-02-04 00:24] falls asleep
-# [1518-02-04 00:49] wakes up
-# [1518-02-04 23:56] Guard #1553 begins shift
-# [1518-02-05 00:28] falls asleep
-# [1518-02-05 00:45] wakes up
-# [1518-02-05 23:59] Guard #2129 begins shift
-# [1518-02-06 00:12] falls asleep
-# [1518-02-06 00:14] wakes up
-# [1518-02-06 00:18] falls asleep
-# [1518-02-06 00:43] wakes up
-# [1518-02-07 00:01] Guard #2689 begins shift
-# [1518-02-07 00:18] falls asleep
-# [1518-02-07 00:19] wakes up
-# [1518-02-07 00:29] falls asleep
-# [1518-02-07 00:47] wakes up
-# [1518-02-07 23:57] Guard #1481 begins shift
-# [1518-02-08 00:14] falls asleep
-# [1518-02-08 00:55] wakes up
-# [1518-02-09 00:02] Guard #1913 begins shift
-# [1518-02-09 00:31] falls asleep
-# [1518-02-09 00:36] wakes up
-# [1518-02-09 00:48] falls asleep
+test_input = """[1518-11-01 00:00] Guard #10 begins shift
+[1518-11-01 00:05] falls asleep
+[1518-11-01 00:25] wakes up
+[1518-11-01 00:30] falls asleep
+[1518-11-01 00:55] wakes up
+[1518-11-01 23:58] Guard #99 begins shift
+[1518-11-02 00:40] falls asleep
+[1518-11-02 00:50] wakes up
+[1518-11-03 00:05] Guard #10 begins shift
+[1518-11-03 00:24] falls asleep
+[1518-11-03 00:29] wakes up
+[1518-11-04 00:02] Guard #99 begins shift
+[1518-11-04 00:36] falls asleep
+[1518-11-04 00:46] wakes up
+[1518-11-05 00:03] Guard #99 begins shift
+[1518-11-05 00:45] falls asleep
+[1518-11-05 00:55] wakes up""".splitlines()
 
-# m['guard id']: arr[120] -- times sleeping per minute between 2300 & 0059
-p = log.split(' ')
-date = p[0][1:]
-time = p[1][:-1].replace(':', '')
-action = p[2] #Guard, falls or wakes
-guardId = p[3] # if action == Guard
+Event = collections.namedtuple('Event', ['guard', 'sleeping', 'minutes'])
+Status = collections.namedtuple('Status', ['sleeping', 'minutes'])
+Max = collections.namedtuple('Max', ['slept_minutes', 'guard', 'minute'])
+default_list = [0]*60
 
-if time.startswith("23"):
-  time = int(time[2:])
-else:
-  time = int(time[2:]) + 60
 
+def convert_logs(logs):
+    events = []
+    active_guard = ''
+    for log in logs:
+        p = log.split(' ')
+        time = p[1][:-1]
+        minutes = int(time[3:])
+        action = p[2]
+        sleeping = False
+
+        if action == 'Guard':
+            active_guard = int(p[3][1:])
+        elif action == 'falls':
+            sleeping = True
+
+        events.append(Event(active_guard, sleeping, minutes))
+
+    return events
+
+
+def parse_logs(logs):
+    events = convert_logs(logs)
+    res = {}
+
+    status = Status(False, 0)
+    for e in events:
+        if status.sleeping:
+            time_list = res.get(e.guard, [0]*60)
+            for i in range(status.minutes-1, e.minutes - 1):
+                time_list[i+1] += 1
+            res[e.guard] = time_list
+
+        status = Status(e.sleeping, e.minutes)
+
+    return res
+
+
+def find_sleepiest_guard(schedules):
+    max = Max(0, 0, 0)
+    for guard, schedule in schedules.items():
+        total_slept = sum(schedule)
+        if total_slept > max.slept_minutes:
+            max = Max(total_slept, guard, 0)
+
+    return max.guard
+
+
+def find_sleepiest_time(input):
+    schedules = parse_logs(input)
+    sleepiest_guard = find_sleepiest_guard(schedules)
+
+    schedule = schedules[sleepiest_guard]
+    max = Max(0, 0, 0)
+    for i, slept_minutes in enumerate(schedule):
+        if slept_minutes > max.slept_minutes:
+            max = Max(slept_minutes, sleepiest_guard, i)
+
+    return sleepiest_guard * max.minute
+
+
+def find_sleepiest_time2(input):
+    schedules = parse_logs(input)
+
+    max = Max(0, 0, 0)
+    for guard, schedule in schedules.items():
+        for i, slept_minutes in enumerate(schedule):
+            if slept_minutes > max.slept_minutes:
+                max = Max(slept_minutes, guard, i)
+
+    return max.guard * max.minute
+
+
+assert find_sleepiest_time(test_input) == 240
+print(f'Sleepiest guard * minute: {find_sleepiest_time(input)}')
+
+assert find_sleepiest_time2(test_input) == 4455
+print(f'Sleepiest minute * guard: {find_sleepiest_time2(input)}')
