@@ -1,3 +1,5 @@
+;; Don't judge, it only have to work once..
+
 (require '[clojure.string :as str])
 (use 'clojure.java.io)
 
@@ -10,30 +12,14 @@
     (doall (line-seq r))))
 
 (defn parse [row]
-  ;; (println row)
   (let [p (str/split row #" ")]
-    ;; (println p)
-    ;; (println (nth p 1))
-    ;; (println (nth p 7))
     [(nth p 1) (nth p 7)]))
 
-(defn parse2 [row] "blah")
 
 (defn transform [list]
   (doall (map parse list)))
-;; (println input)
-;; Step G must be finished before step T can begin.
 
 
-;; (defn count [])
-
-;; (println (parse "Step B must be finished before step P can begin."))
-;; (println (type input))
-(println (count input))
-;; (println (nth input 2))
-;; (println (transform input))
-
-;; Create a map: {letter: 0} for all letters in steps
 (defn zero-map [steps]
   (merge 
     (reduce #(assoc %1 (%2 0) 0)
@@ -42,18 +28,10 @@
     (reduce #(assoc %1 (%2 1) 0)
       {}
       steps)))
-(defn zero-map2 [steps]
-    (reduce #(assoc %1 (%2 0) 0)
-      {}
-      steps))
-
-;; (println (zero-map (transform input)))
 
 ;; Map input into how many dependencies each have
 (defn count-requirements [steps]
-    ;; (println steps)
   (reduce #(assoc %1 (%2 1) (inc (%1 (%2 1) 0)))
-          ;; {}
           (zero-map steps)
           steps))
 
@@ -72,98 +50,46 @@
 (defn filter-steps [steps instruction]
   (remove (partial same? instruction) steps))
 (defn filter-steps2 [steps instructions]
-  (println instructions)
-  (println (first instructions))
-  ;; (println (dissoc instructions (first instructions)))
-  ;; (println steps)
-  ;; (println (peek instructions) (pop instructions))
-  (loop [instr (first instructions)
-         instrs-left (dissoc instructions (instr 0))
-         steps-left steps]
-         (println instr)
-         (println instrs-left)
-        ;;  (println instr instrs-left steps-left)
-         (when (< (count instrs-left) 0)
-          (recur (peek instrs-left)
-                 (pop instrs-left)
-                 (filter-steps steps-left instr)))))
+  (if (= (count instructions) 0) steps
+    (let [instr (first instructions)]
+      (filter-steps steps instr))))
 
 (defn part1 [input]
   (loop [steps (transform input)]
-    ;; (println (count steps) steps)
     (when (> (count steps) 0)
-    ;; (if (empty? steps)
-      ;; (println steps)
       (let [instr (first (get-next-instructions steps))]
         (print (instr 0))
         (if (= (count steps) 1)
           (println steps))
         (recur (filter-steps steps instr))))))
 
-(defn get-finished [ts ongoing]
- []) ;; TODO
 
-(defn step-cost [step]
-  (+ 61 (- (int (first step)) (int \A))))
-
-
-(defn part3 [input]
-  (loop [steps (transform input)]
-    ;; (println (count steps) steps)
-    (when (> (count steps) 0)
-    ;; (if (empty? steps)
-      ;; (println steps)
-      (let [instrs (get-next-instructions steps)]
-        (println instrs)
-        (if (= (count steps) 1)
-          (println steps))
-        (recur (filter-steps2 steps instrs))))))
+(defn step-cost [ts step]
+  [(first step) (+ ts 61 (- (int (.charAt (first step) 0)) (int \A)))])
 
 (defn part2 [input]
   (loop [ts 0
          steps (transform input)
          workers (set (range 5))
-         ongoing []]
-    ;; (if (and (empty? ongoing) (empty? steps)
-    (when (> (count steps) 0)
-      (let [completed-now (get-finished ts ongoing)
-            completed-now (filter #(= ts (nth % 1)) ongoing)
-            steps-now (filter-steps2 steps completed-now)
+         ongoing (map (partial step-cost 0) (get-next-instructions steps))]
+    (if (or (and (empty? ongoing) (empty? steps)) (= ts 10000))
+      (+ 64 ts) ;; This is to compencate for the lost last letter in this calculation
+      (let [completed-now (filter (comp #{ts} last) ongoing)
+            completed-now-set (set (map first completed-now))
+            steps-left (filter-steps2 steps completed-now)
+            instrs (get-next-instructions steps-left)
+            next-ongoing (map (partial step-cost ts) (get-next-instructions steps))
+            ongoing-now-set (set (map first ongoing))
+            next-ongoing2 (remove #(contains? ongoing-now-set (first %)) next-ongoing)
+            still-ongoing (remove #(contains? completed-now-set (first %)) ongoing)
+            nbr-next-ongoing (- 5 (count still-ongoing))
+            all-ongoing (concat still-ongoing (take nbr-next-ongoing next-ongoing2))
+      ]
+      (recur (inc ts)
+             steps-left
+             workers
+             all-ongoing)))))
 
-      ])
-      )))
-
-;; (println res)
-;; (println (nth (get-next-instruction res) 0))
-
-;; (println (filter-steps (transform input) (get-next-instruction res)))
-
-;; (println (count-requirements test-input))
-;; (part1 input)
-(part3 input)
-
-;; (println test-input)
-
-;; (def abc1
-;;   (transform test-input))
-;; (println abc1)
-
-;; (def abc2
-;;   (get-next-instruction abc1))
-;; (println abc2)
-
-;; (def abc3
-;;   (filter-steps abc1 abc2))
-;; (println abc3)
-
-;; ;; (def abc1b
-;; ;;   (transform test-input))
-;; ;; (println abc1b)
-
-;; (def abc2b
-;;   (get-next-instruction abc3))
-;; (println abc2b)
-
-;; (def abc3b
-;;   (filter-steps abc3 abc2b))
-;; (println abc3b)
+(println "Part1: ")
+(part1 input)
+(println "Part2: " (part2 input))
