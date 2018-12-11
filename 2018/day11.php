@@ -66,7 +66,7 @@ assert(powerLevel(217, 196, 39) == 0);
 assert(powerLevel(101, 153, 71) == 4);
 
 $g = makeFuelGrid(INPUT);
-print "Part2:\n";
+print "Part1:\n";
 findLargest($g, 3);
 
 print "Part2:\n";
