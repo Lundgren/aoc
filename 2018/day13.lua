@@ -12,7 +12,7 @@ function read_tracks(file)
         row = {}
         for i = 1, #line do
             local c = line:sub(i,i) 
-            local track = { cart = nil }
+            local track = { cart = nil, moved = 0 }
             -- print(c)
             if c == "<" or c == ">" then
                 track.path = "-"
@@ -31,16 +31,17 @@ function read_tracks(file)
     return tracks
 end
 
-function cart(old_cart, new_track)
-  if old_cart == "<" then
+function cart(old_track, new_track)
+    --print("cart(" .. old_track.cart .. ", " .. new_track.path)
+  if old_track.cart == "<" then
     if new_track.path == "\\" then return "^"
     elseif new_track.path == "/" then return "v"
     else return "<" end
-  elseif old_cart == ">" then
+  elseif old_track.cart == ">" then
     if new_track.path == "\\" then return "v" 
     elseif new_track.path == "/" then return "^"
     else return ">" end
-  elseif old_cart == "v" then 
+  elseif old_track.cart == "v" then 
     if new_track.path == "\\" then return ">" 
     elseif new_track.path == "/" then return "<"
     else return "v" end
@@ -57,27 +58,38 @@ function tick(tracks, turn) -- continue on turn
         for j = 1, #row do
             track = row[j]
             if track.cart then
-                print(i .. " " .. j .. " - " .. track.cart .. " " .. track.path)
-                if is_left(track) then
-                    if is_cart(row[j-1]) then
-                        return true, i, j-i
+                -- print(i .. " " .. j .. " " .. track.moved)
+            end
+            if track.cart and track.moved < turn then
+                -- print(i .. " " .. j .. " - " .. track.cart .. " " .. track.path)
+                if track.cart == "<" then
+                    --print("in left")
+                    if row[j-1].cart then
+                        return true, i, j-1
                     end
-                    row[j-1].cart = cart(row[j].cart, row[j-i])
-                elseif is_right(track) then
-                    if is_cart(row[j+1]) then
+                    row[j-1].cart = cart(track, row[j-1])
+                    row[j-1].moved = turn
+
+                elseif track.cart == ">" then
+                    if row[j+1].cart then
                         return true, i, j+1
                     end
-                    row[j+1].cart = cart(row[j].cart, row[j+i])
-                elseif is_up(track) then
-                    if is_cart(tracks[i-1][j]) then
+                    row[j+1].cart = cart(track, row[j+1])
+                    row[j+1].moved = turn
+
+                elseif track.cart == "^" then
+                    if tracks[i-1][j].cart then
                         return true, i-1, j
                     end
-                    tracks[i-1][j].cart = cart(row[j].cart, tracks[i-1][j])
+                    tracks[i-1][j].cart = cart(track, tracks[i-1][j])
+                    tracks[i-1][j].moved = turn
+
                 else
-                    if is_cart(tracks[i+1][j]) then
+                    if tracks[i+1][j].cart then
                         return true, i+1, j
                     end
-                    tracks[i+1][j].cart = cart(row[j].cart, tracks[i+1][j])
+                    tracks[i+1][j].cart = cart(track, tracks[i+1][j])
+                    tracks[i+1][j].moved = turn
                 end
                 row[j].cart = nil
             end
@@ -105,11 +117,19 @@ end
 
 local track = read_tracks("day13.input")
 print_track(track)
-local coll, x, y = tick(track)
-print(tostring(coll) .. "-" .. x .. "x" .. y)
-print_track(track)
+-- local coll, x, y = tick(track, 1)
+-- print(tostring(coll) .. "-" .. x .. "x" .. y)
+-- print_track(track)
 
-
+local collision = false
+local x, y = 0
+local turn = 1
+while (collision == false and turn < 15) do
+    collision, x, y = tick(track, turn)
+    print_track(track)
+    turn = turn + 1
+end
+print("Collision at " .. x .. ", " .. y)
 
 
 
