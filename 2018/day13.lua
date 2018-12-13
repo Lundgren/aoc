@@ -1,10 +1,10 @@
 
 
-function is_left(s) if string.match(s:sub(1,1), "<") then return true else return false end end
-function is_right(s) if string.match(s:sub(1,1), ">") then return true else return false end end
-function is_up(s) if string.match(s:sub(1,1), "^") then return true else return false end end
-function is_down(s) if string.match(s:sub(1,1), "v") then return truen else return false end end
-function is_cart(s) return is_left(s) or is_right(s) or is_up(s) or is_down(s) end
+function is_left(t) if t.cart == "<" then return true else return false end end
+function is_right(t) if t.cart == ">" then return true else return false end end
+function is_up(t) if t.cart == "^" then return true else return false end end
+function is_down(t) if t.cart == "v" then return truen else return false end end
+function is_cart(t) return is_left(t) or is_right(t) or is_up(t) or is_down(t) end
 
 function read_tracks(file)
     tracks = {}
@@ -12,13 +12,18 @@ function read_tracks(file)
         row = {}
         for i = 1, #line do
             local c = line:sub(i,i) 
-            if is_left(c) or is_right(c) then
-                row[i] = c + "-"
-            elseif is_up(c) or is_down(c) then
-                row[i] = c + "|"
+            local track = { cart = nil }
+            -- print(c)
+            if c == "<" or c == ">" then
+                track.path = "-"
+                track.cart = c
+            elseif c == "^" or c == "v" then
+                track.path = "-"
+                track.cart = c
             else
-                row[i] =  c
+                track.path =  c
             end
+            row[i] = track
         end
         tracks[#tracks + 1] = row
     end
@@ -26,34 +31,55 @@ function read_tracks(file)
     return tracks
 end
 
-function tick(tracks)
+function cart(old_cart, new_track)
+  if old_cart == "<" then
+    if new_track.path == "\\" then return "^"
+    elseif new_track.path == "/" then return "v"
+    else return "<" end
+  elseif old_cart == ">" then
+    if new_track.path == "\\" then return "v" 
+    elseif new_track.path == "/" then return "^"
+    else return ">" end
+  elseif old_cart == "v" then 
+    if new_track.path == "\\" then return ">" 
+    elseif new_track.path == "/" then return "<"
+    else return "v" end
+  else 
+    if new_track.path == "\\" then return "<" 
+    elseif new_track.path == "/" then return ">"
+    else return "^" end
+  end
+end
+
+function tick(tracks, turn) -- continue on turn
     for i = 1, #tracks do
         row = tracks[i]
         for j = 1, #row do
-            s = row[j]
-            if #s == 2 then
-                if is_left(s) then
+            track = row[j]
+            if track.cart then
+                print(i .. " " .. j .. " - " .. track.cart .. " " .. track.path)
+                if is_left(track) then
                     if is_cart(row[j-1]) then
                         return true, i, j-i
                     end
-                    row[j-1] = s:sub(1,1) + row[j-1]
-                elseif is_right(s) then
+                    row[j-1].cart = cart(row[j].cart, row[j-i])
+                elseif is_right(track) then
                     if is_cart(row[j+1]) then
                         return true, i, j+1
                     end
-                    row[j+1] = s:sub(1,1) + row[j+1]
-                elseif is_up(s) then
+                    row[j+1].cart = cart(row[j].cart, row[j+i])
+                elseif is_up(track) then
                     if is_cart(tracks[i-1][j]) then
                         return true, i-1, j
                     end
-                    tracks[i-i][j] = s:sub(1,1) + tracks[i-i][j]
+                    tracks[i-1][j].cart = cart(row[j].cart, tracks[i-1][j])
                 else
                     if is_cart(tracks[i+1][j]) then
                         return true, i+1, j
                     end
-                    tracks[i+1][j] = s:sub(1,1) + tracks[i+1][j]
+                    tracks[i+1][j].cart = cart(row[j].cart, tracks[i+1][j])
                 end
-                row[j] = s:sub(2,2)
+                row[j].cart = nil
             end
         end
     end
@@ -65,7 +91,11 @@ function print_track(track)
     for i = 1, #tracks do
         row = tracks[i]
         for j = 1, #row do
-            io.write(row[j]:sub(1,1))
+          if row[j].cart then
+            io.write(row[j].cart)
+          else
+            io.write(row[j].path)
+          end
         end
         print("")
     end
@@ -75,7 +105,8 @@ end
 
 local track = read_tracks("day13.input")
 print_track(track)
-tick(track)
+local coll, x, y = tick(track)
+print(tostring(coll) .. "-" .. x .. "x" .. y)
 print_track(track)
 
 
