@@ -1,100 +1,117 @@
+NEXT_PATH = {
+    ['<-']  = "<",
+    ["</"]  = "v",
+    ["<\\"] = "^",
+    [">-"]  = ">",
+    [">/"]  = "^",
+    [">\\"] = "v",
+    ["^|"]  = "^",
+    ["^/"]  = ">",
+    ["^\\"] = "<",
+    ["v|"]  = "v",
+    ["v/"]  = "<",
+    ["v\\"] = ">",
+    ["<+0"] = "v",
+    ["<+1"] = "<",
+    ["<+2"] = "^",
+    [">+0"] = "^",
+    [">+1"] = ">",
+    [">+2"] = "v",
+    ["^+0"] = "<",
+    ["^+1"] = "^",
+    ["^+2"] = ">",
+    ["v+0"] = ">",
+    ["v+1"] = "v",
+    ["v+2"] = "<"
+}
 
-
-function is_left(t) if t.cart == "<" then return true else return false end end
-function is_right(t) if t.cart == ">" then return true else return false end end
-function is_up(t) if t.cart == "^" then return true else return false end end
-function is_down(t) if t.cart == "v" then return truen else return false end end
-function is_cart(t) return is_left(t) or is_right(t) or is_up(t) or is_down(t) end
-
-function read_tracks(file)
-    tracks = {}
+function parse(file)
+    local track = {}
+    local carts = {}
     for line in io.lines(file) do
-        row = {}
+        local row = {}
         for i = 1, #line do
             local c = line:sub(i,i) 
-            local track = { cart = nil }
-            -- print(c)
             if c == "<" or c == ">" then
-                track.path = "-"
-                track.cart = c
+                carts[#carts+1] = {id = #carts, x = i, y = #track+1, dir = c, turn = 0}
+                row[i] = "-"
             elseif c == "^" or c == "v" then
-                track.path = "-"
-                track.cart = c
+                carts[#carts+1] = {id = #carts, x = i, y = #track+1, dir = c, turn = 0}
+                row[i] = "|"
             else
-                track.path =  c
+                row[i] = c
             end
-            row[i] = track
         end
-        tracks[#tracks + 1] = row
+        track[#track + 1] = row
     end
     
-    return tracks
+    return carts, track
 end
 
-function cart(old_cart, new_track)
-  if old_cart == "<" then
-    if new_track.path == "\\" then return "^"
-    elseif new_track.path == "/" then return "v"
-    else return "<" end
-  elseif old_cart == ">" then
-    if new_track.path == "\\" then return "v" 
-    elseif new_track.path == "/" then return "^"
-    else return ">" end
-  elseif old_cart == "v" then 
-    if new_track.path == "\\" then return ">" 
-    elseif new_track.path == "/" then return "<"
-    else return "v" end
-  else 
-    if new_track.path == "\\" then return "<" 
-    elseif new_track.path == "/" then return ">"
-    else return "^" end
-  end
+function update_cart(cart, track, x, y)
+    local p = cart.dir .. track[y][x]
+    if track[y][x] == "+" then
+        p = p .. (cart.turn % 3)
+        cart.turn = cart.turn + 1
+    end
+
+    cart.x = x
+    cart.y = y
+    cart.dir = NEXT_PATH[p]
 end
 
-function tick(tracks, turn) -- continue on turn
-    for i = 1, #tracks do
-        row = tracks[i]
-        for j = 1, #row do
-            track = row[j]
-            if track.cart then
-                print(i .. " " .. j .. " - " .. track.cart .. " " .. track.path)
-                if is_left(track) then
-                    if is_cart(row[j-1]) then
-                        return true, i, j-i
-                    end
-                    row[j-1].cart = cart(row[j].cart, row[j-i])
-                elseif is_right(track) then
-                    if is_cart(row[j+1]) then
-                        return true, i, j+1
-                    end
-                    row[j+1].cart = cart(row[j].cart, row[j+i])
-                elseif is_up(track) then
-                    if is_cart(tracks[i-1][j]) then
-                        return true, i-1, j
-                    end
-                    tracks[i-1][j].cart = cart(row[j].cart, tracks[i-1][j])
-                else
-                    if is_cart(tracks[i+1][j]) then
-                        return true, i+1, j
-                    end
-                    tracks[i+1][j].cart = cart(row[j].cart, tracks[i+1][j])
-                end
-                row[j].cart = nil
-            end
+function any_collisions(carts, cart)
+    for i = 1, #carts do
+        if cart.id ~= carts[i].id and cart.x == carts[i].x and cart.y == carts[i].y and not carts[i].dead and not cart.dead then
+            cart.dead = true
+            carts[i].dead = true
+            return true
+        end
+    end
+    return false
+end
+
+function tick(carts, track)
+    table.sort(carts, function(c1, c2) return c1.x * 1000 + c1.y < c2.x * 1000 + c2.y end)
+
+    local colliding_cart = nil
+    for i = 1, #carts do
+        cart = carts[i]
+
+        if cart.dir == "<" then
+            update_cart(cart, track, cart.x-1, cart.y)
+        elseif cart.dir == ">" then
+            update_cart(cart, track, cart.x+1, cart.y)
+        elseif cart.dir == "^" then
+            update_cart(cart, track, cart.x, cart.y-1)
+        else
+            update_cart(cart, track, cart.x, cart.y+1)
+        end
+
+        if any_collisions(carts, cart) then
+            colliding_cart = cart
         end
     end
 
-    return false, 0, 0
+    return colliding_cart
 end
 
-function print_track(track)
-    for i = 1, #tracks do
-        row = tracks[i]
-        for j = 1, #row do
-          if row[j].cart then
-            io.write(row[j].cart)
+function print_track(carts, track)
+    local cart_map = {}
+    for i = 1, #carts do
+        c = carts[i]
+        if not c.dead then
+            cart_map[c.y .. c.x] = c.dir
+        end
+    end
+
+    for y = 1, #track do
+        row = track[y]
+        for x = 1, #track[y] do
+          if cart_map[y .. x] then
+            io.write(cart_map[y .. x])
           else
-            io.write(row[j].path)
+            io.write(track[y][x])
           end
         end
         print("")
@@ -102,14 +119,36 @@ function print_track(track)
     print("")
 end
     
+function count_carts(carts)
+    count = 0
+    for i = 1, #carts do
+        if not carts[i].dead then
+            count = count + 1
+        end
+    end
+    return count
+end
 
-local track = read_tracks("day13.input")
-print_track(track)
-local coll, x, y = tick(track)
-print(tostring(coll) .. "-" .. x .. "x" .. y)
-print_track(track)
 
+local carts, track = parse("day13.input")
+-- print_track(carts, track)
 
+local count = count_carts(carts)
+while (count > 1) do
+    colliding_cart = tick(carts, track)
+
+    if colliding_cart then
+        print("Collision at " .. (colliding_cart.x-1) .. "," .. (colliding_cart.y-1))
+    end
+    
+    count = count_carts(carts)
+end
+
+for i = 1, #carts do
+    if not carts[i].dead then
+        print("Last cart at " .. (carts[i].x-1) .. "," .. (carts[i].y-1))
+    end
+end
 
 
 
