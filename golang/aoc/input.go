@@ -9,6 +9,7 @@ type Input interface {
 	String() string
 	Lines() []string
 	Scanner() *Scanner
+	Sequence() *Sequence
 }
 
 type input struct {
@@ -34,33 +35,9 @@ func (i input) Lines() []string {
 }
 
 func (i input) Scanner() *Scanner {
-	return &Scanner{
-		source: i.input,
-		idx:    -1,
-	}
+	return NewScanner(i.input)
 }
 
-type Scanner struct {
-	source string
-	idx    int
-}
-
-func (s *Scanner) Next() bool {
-	s.idx++
-	return s.idx < len(s.source)
-}
-
-func (s *Scanner) Get() byte {
-	return s.source[s.idx]
-}
-
-func (s *Scanner) Jump(steps int) {
-	s.idx += steps
-}
-
-func (s *Scanner) Peek() byte {
-	if s.idx+1 >= len(s.source) {
-		return ' '
-	}
-	return s.source[s.idx+1]
+func (i input) Sequence() *Sequence {
+	return NewSequence(i.input)
 }

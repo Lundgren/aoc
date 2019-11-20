@@ -27,6 +27,10 @@ func (s *Set) Empty() bool {
 	return len(s.set) == 0
 }
 
+func (s *Set) Len() int {
+	return len(s.set)
+}
+
 func (s *Set) List() []string {
 	res := []string{}
 	for k := range s.set {

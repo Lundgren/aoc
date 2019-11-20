@@ -2,6 +2,10 @@ package aoc2015
 
 import (
 	"aoc/2015/day1"
+	"aoc/2015/day10"
+	"aoc/2015/day11"
+	"aoc/2015/day12"
+	"aoc/2015/day13"
 	"aoc/2015/day2"
 	"aoc/2015/day3"
 	"aoc/2015/day4"
@@ -23,4 +27,8 @@ func Register(r *aoc.Runner) {
 	r.Register(2015, 7, day7.Examples, day7.Solve, day7.CorrectAnswers)
 	r.Register(2015, 8, day8.Examples, day8.Solve, day8.CorrectAnswers)
 	r.Register(2015, 9, day9.Examples, day9.Solve, day9.CorrectAnswers)
+	r.Register(2015, 10, day10.Examples, day10.Solve, day10.CorrectAnswers)
+	r.Register(2015, 11, day11.Examples, day11.Solve, day11.CorrectAnswers)
+	r.Register(2015, 12, day12.Examples, day12.Solve, day12.CorrectAnswers)
+	r.Register(2015, 13, day13.Examples, day13.Solve, day13.CorrectAnswers)
 }

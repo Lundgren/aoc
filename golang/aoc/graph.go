@@ -1,5 +1,7 @@
 package aoc
 
+import "github.com/gitchander/permutation"
+
 type Graph struct {
 	distances map[string]int
 	places    *Set
@@ -17,6 +19,10 @@ func (g *Graph) AddDistance(from, to string, distance int) {
 	g.distances[to+from] = distance
 	g.places.Add(from)
 	g.places.Add(to)
+}
+
+func (g *Graph) Permutator() *permutation.Permutator {
+	return permutation.New(permutation.StringSlice(g.places.List()))
 }
 
 func (g *Graph) BruteforceMinMaxDistToAll() (shortest, longest int) {

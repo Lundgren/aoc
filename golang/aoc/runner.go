@@ -3,6 +3,7 @@ package aoc
 import (
 	"fmt"
 	"strconv"
+	"time"
 )
 
 type Example struct {
@@ -69,9 +70,11 @@ func solve(p Problem) {
 
 	path := fmt.Sprintf("%d/day%d/input.txt", p.Year, p.Day)
 	input := FromFile(path)
+	start := time.Now()
 	sol1, sol2 := p.SolverFn(input)
+	elapsed := time.Since(start)
 
-	fmt.Printf("Got result:\nPart 1: %s\nPart 2: %s\n", sol1, sol2)
+	fmt.Printf("Got result [%s]:\nPart 1: %s\nPart 2: %s\n", elapsed, sol1, sol2)
 }
 
 // Wrapper to enable us to return ints and other things
