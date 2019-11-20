@@ -8,6 +8,6 @@ var Examples = []aoc.Example{
 	{Input: "", Expected1: "", Expected2: ""},
 }
 
-func Solve(input aoc.Input) (interface{}, interface{}) {
+func Solve(in aoc.Input) (interface{}, interface{}) {
 	return "", ""
 }
