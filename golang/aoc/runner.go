@@ -10,45 +10,47 @@ type Example struct {
 }
 
 type Runner struct {
-	problems []problem
+	Problems []Problem
 }
 
-type problem struct {
-	year, day int
-	examples  []Example
-	solverFn  func(Input) (string, string)
+type Problem struct {
+	Year, Day int
+	Examples  []Example
+	SolverFn  func(Input) (string, string)
+	Answers   []string
 }
 
 func NewRunner() Runner {
 	return Runner{
-		problems: []problem{},
+		Problems: []Problem{},
 	}
 }
 
-func (r *Runner) Register(year, day int, examples []Example, solverFn func(Input) (interface{}, interface{})) {
-	r.problems = append(r.problems, problem{
-		year:     year,
-		day:      day,
-		examples: examples,
-		solverFn: wrap(solverFn),
+func (r *Runner) Register(year, day int, examples []Example, solverFn func(Input) (interface{}, interface{}), answers []string) {
+	r.Problems = append(r.Problems, Problem{
+		Year:     year,
+		Day:      day,
+		Examples: examples,
+		SolverFn: wrap(solverFn),
+		Answers:  answers,
 	})
 }
 
 func (r *Runner) RunLatest() {
-	solve(r.problems[len(r.problems)-1])
+	solve(r.Problems[len(r.Problems)-1])
 }
 
 func (r *Runner) Run(year, day int) {
 
 }
 
-func solve(p problem) {
-	fmt.Printf(">>> Running AoC %d day %d:\n\n", p.year, p.day)
+func solve(p Problem) {
+	fmt.Printf(">>> Running AoC %d day %d:\n\n", p.Year, p.Day)
 
 	failed := false
-	for i, ex := range p.examples {
+	for i, ex := range p.Examples {
 		input := FromString(ex.Input)
-		sol1, sol2 := p.solverFn(input)
+		sol1, sol2 := p.SolverFn(input)
 
 		if ex.Expected1 != "" && ex.Expected1 != sol1 {
 			failed = true
@@ -63,11 +65,11 @@ func solve(p problem) {
 		return
 	}
 
-	fmt.Printf("Successfully ran %d examples\n", len(p.examples))
+	fmt.Printf("Successfully ran %d examples\n", len(p.Examples))
 
-	path := fmt.Sprintf("%d/day%d/input.txt", p.year, p.day)
+	path := fmt.Sprintf("%d/day%d/input.txt", p.Year, p.Day)
 	input := FromFile(path)
-	sol1, sol2 := p.solverFn(input)
+	sol1, sol2 := p.SolverFn(input)
 
 	fmt.Printf("Got result:\nPart 1: %s\nPart 2: %s\n", sol1, sol2)
 }
@@ -84,6 +86,8 @@ func toStr(v interface{}) string {
 	switch v := v.(type) {
 	case int:
 		return strconv.Itoa(v)
+	case uint16:
+		return strconv.Itoa(int(v))
 	case string:
 		return v
 	default:

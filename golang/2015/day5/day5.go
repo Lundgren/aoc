@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var CorrectAnswers = []string{"258", "53"}
+
 var Examples = []aoc.Example{
 	{Input: "ugknbfddgicrmopn", Expected1: "1"},
 	{Input: "aaa", Expected1: "1"},

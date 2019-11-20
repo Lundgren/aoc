@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var CorrectAnswers = []string{"254575", "1038736"}
+
 var Examples = []aoc.Example{
 	{Input: "abcdef", Expected1: "609043", Expected2: ""},
 	{Input: "pqrstuv", Expected1: "1048970", Expected2: ""},

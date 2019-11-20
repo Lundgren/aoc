@@ -4,6 +4,8 @@ import (
 	"aoc/aoc"
 )
 
+var CorrectAnswers = []string{"232", "1783"}
+
 var Examples = []aoc.Example{
 	{Input: "(())", Expected1: "0"},
 	{Input: "(()(()(", Expected1: "3"},

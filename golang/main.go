@@ -5,18 +5,13 @@ import (
 	"aoc/aoc"
 )
 
-/*
-Problems
-- Read input, ex from file
-- Parse into some data struct
-   - String list
-   - Int list
-   - Pos list
-*/
-
 func main() {
+	runner := setup()
+	runner.RunLatest()
+}
+
+func setup() *aoc.Runner {
 	runner := aoc.NewRunner()
 	aoc2015.Register(&runner)
-
-	runner.RunLatest()
+	return &runner
 }

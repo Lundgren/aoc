@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var CorrectAnswers = []string{"377891", "14110788"}
+
 var Examples = []aoc.Example{
 	{Input: "turn on 0,0 through 999,999", Expected1: "1000000"},
 	{Input: "toggle 0,0 through 999,0", Expected1: "1000"},
