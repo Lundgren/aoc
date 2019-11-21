@@ -1,54 +1,51 @@
 package aoc
 
-import "github.com/gitchander/permutation"
-
 type Graph struct {
 	distances map[string]int
-	places    *Set
+	points    *Set
 }
 
 func NewGraph() *Graph {
 	return &Graph{
 		distances: map[string]int{},
-		places:    NewSet(),
+		points:    NewSet(),
 	}
+}
+
+func (g *Graph) Points() *Set {
+	return g.points
 }
 
 func (g *Graph) AddDistance(from, to string, distance int) {
 	g.distances[from+to] = distance
 	g.distances[to+from] = distance
-	g.places.Add(from)
-	g.places.Add(to)
+	g.points.Add(from)
+	g.points.Add(to)
 }
 
-func (g *Graph) Permutator() *permutation.Permutator {
-	return permutation.New(permutation.StringSlice(g.places.List()))
+func (g *Graph) AddOneWayDistance(from, to string, distance int) {
+	g.distances[from+to] = distance
+	g.points.Add(from)
+	g.points.Add(to)
 }
 
-func (g *Graph) BruteforceMinMaxDistToAll() (shortest, longest int) {
-	shortest = 99999999
-	for _, from := range g.places.List() {
-		short, long := recursiveDist(from, g.places.Except(from), g.distances)
-
-		shortest = Min(shortest, short)
-		longest = Max(longest, long)
-	}
-	return shortest, longest
+func (g *Graph) DistanceBetween(from, to string) int {
+	return g.distances[from+to]
 }
 
-func recursiveDist(from string, places *Set, distances map[string]int) (shortest, longest int) {
-	if places.Empty() {
-		return 0, 0
+func (g *Graph) DistanceBetweenMany(points []string) int {
+	prev := ""
+	distance := 0
+	for i, p := range points {
+		if i > 0 {
+			distance += g.DistanceBetween(prev, p)
+		}
+		prev = p
 	}
 
-	shortest = 99999999
-	for _, to := range places.List() {
-		dist := distances[from+to]
-		short, long := recursiveDist(to, places.Except(to), distances)
+	return distance
+}
 
-		shortest = Min(shortest, short+dist)
-		longest = Max(longest, long+dist)
-	}
-
-	return shortest, longest
+func (g *Graph) Permutator() *Permutator {
+	return NewPermutator(g.points.List())
 }

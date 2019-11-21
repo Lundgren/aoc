@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-var CorrectAnswers = []string{"156366", ""}
+var CorrectAnswers = []string{"156366", "96852"}
 
 var Examples = []aoc.Example{
 	{Input: `[1,2,3]`, Expected1: "6"},

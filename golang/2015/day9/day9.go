@@ -20,7 +20,12 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 		g.AddDistance(p[0], p[2], aoc.ParseInt(p[4]))
 	}
 
-	part1, part2 := g.BruteforceMinMaxDistToAll()
+	m := aoc.NewMinMaxer()
+	p := g.Permutator()
+	for p.Next() {
+		d := g.DistanceBetweenMany(p.Get())
+		m.Register(d)
+	}
 
-	return part1, part2
+	return m.Min, m.Max
 }

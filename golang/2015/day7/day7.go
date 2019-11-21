@@ -17,36 +17,36 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 
 		switch {
 		case strings.Contains(i, "AND"):
-			e.SetRule(p[4], func(signals aoc.State) interface{} {
+			e.SetRule(p[4], func(_ int, signals aoc.State) interface{} {
 				s1 := signalOrConst(p[0], signals)
 				s2 := signalOrConst(p[2], signals)
 				return s1 & s2
 			})
 		case strings.Contains(i, "OR"):
-			e.SetRule(p[4], func(signals aoc.State) interface{} {
+			e.SetRule(p[4], func(_ int, signals aoc.State) interface{} {
 				s1 := signalOrConst(p[0], signals)
 				s2 := signalOrConst(p[2], signals)
 				return s1 | s2
 			})
 		case strings.Contains(i, "LSHIFT"):
-			e.SetRule(p[4], func(signals aoc.State) interface{} {
+			e.SetRule(p[4], func(_ int, signals aoc.State) interface{} {
 				s := signalOrConst(p[0], signals)
 				steps := signalOrConst(p[2], signals)
 				return s << steps
 			})
 		case strings.Contains(i, "RSHIFT"):
-			e.SetRule(p[4], func(signals aoc.State) interface{} {
+			e.SetRule(p[4], func(_ int, signals aoc.State) interface{} {
 				s := signalOrConst(p[0], signals)
 				steps := signalOrConst(p[2], signals)
 				return s >> steps
 			})
 		case strings.Contains(i, "NOT"):
-			e.SetRule(p[3], func(signals aoc.State) interface{} {
+			e.SetRule(p[3], func(_ int, signals aoc.State) interface{} {
 				s := signalOrConst(p[1], signals)
 				return ^s
 			})
 		default: //Constant
-			e.SetRule(p[2], func(signals aoc.State) interface{} {
+			e.SetRule(p[2], func(_ int, signals aoc.State) interface{} {
 				s := signalOrConst(p[0], signals)
 				return s
 			})
@@ -57,7 +57,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	part1 := sig.Uint16("a")
 
 	e.ClearState()
-	e.SetRule("b", func(signals aoc.State) interface{} {
+	e.SetRule("b", func(_ int, signals aoc.State) interface{} {
 		return part1
 	})
 
