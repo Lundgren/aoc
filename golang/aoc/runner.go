@@ -41,8 +41,16 @@ func (r *Runner) RunLatest() {
 	solve(r.Problems[len(r.Problems)-1])
 }
 
-func (r *Runner) Run(year, day int) {
+func (r *Runner) RunAll() {
+	fmt.Printf("Running %d problems\n\n", len(r.Problems))
 
+	start := time.Now()
+	for _, p := range r.Problems {
+		quickSolve(p)
+	}
+
+	elapsed := time.Since(start)
+	fmt.Printf("\nCompleted in %s\n", elapsed)
 }
 
 func solve(p Problem) {
@@ -75,6 +83,20 @@ func solve(p Problem) {
 	elapsed := time.Since(start)
 
 	fmt.Printf("Got result [%s]:\nPart 1: %s\nPart 2: %s\n", elapsed, sol1, sol2)
+}
+
+func quickSolve(p Problem) {
+	start := time.Now()
+	path := fmt.Sprintf("%d/day%d/input.txt", p.Year, p.Day)
+	input := FromFile(path)
+	sol1, sol2 := p.SolverFn(input)
+	elapsed := time.Since(start)
+
+	state := "Succeeded"
+	if sol1 != p.Answers[0] || sol2 != p.Answers[1] {
+		state = "Failed"
+	}
+	fmt.Printf("%d Day %d: %s, took %s\n", p.Year, p.Day, state, elapsed)
 }
 
 // Wrapper to enable us to return ints and other things

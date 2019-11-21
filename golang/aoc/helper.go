@@ -3,6 +3,7 @@ package aoc
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func Check(err error) {
@@ -12,7 +13,7 @@ func Check(err error) {
 }
 
 func ParseInt(s string) int {
-	i, err := strconv.ParseInt(s, 10, 64)
+	i, err := strconv.ParseInt(strings.TrimSpace(s), 10, 64)
 	Check(err)
 	return int(i)
 }
@@ -39,24 +40,41 @@ func Min(values ...int) int {
 
 func GetMinMax(src interface{}) *MinMaxer {
 	m := NewMinMaxer()
+	iterate(src, func(n int) {
+		m.Register(n)
+	})
+	return m
+}
+
+func Sum(src interface{}) int {
+	sum := 0
+	iterate(src, func(n int) {
+		sum += n
+	})
+	return sum
+}
+
+func iterate(src interface{}, fn func(n int)) {
 	switch t := src.(type) {
 	case State:
 		for _, val := range t.State {
-			m.Register(ParseInt(val))
+			fn(ParseInt(val))
 		}
 	case map[string]int:
 		for _, val := range t {
-			m.Register(val)
+			fn(val)
+		}
+	case map[int]int:
+		for _, val := range t {
+			fn(val)
 		}
 	case []int:
 		for _, val := range t {
-			m.Register(val)
+			fn(val)
 		}
 	default:
-		panic(fmt.Sprintf("GetMinMax is not implemented for type %T", src))
+		panic(fmt.Sprintf("iterate is not implemented for type %T", src))
 	}
-
-	return m
 }
 
 func Reverse(a []string) []string {
@@ -79,6 +97,15 @@ func MergeMaps(maps ...map[string]int) map[string]int {
 	return res
 }
 
+func IntMap(s string) map[string]int {
+	res := map[string]int{}
+	for _, l := range strings.Split(s, "\n") {
+		p := strings.Split(l, ":")
+		res[strings.TrimSpace(p[0])] = ParseInt(p[1])
+	}
+	return res
+}
+
 type MinMaxer struct {
 	Min, Max int
 }
@@ -88,6 +115,10 @@ func NewMinMaxer() *MinMaxer {
 }
 
 func (m *MinMaxer) Register(n int) {
-	m.Min = Min(m.Min, n)
-	m.Max = Max(m.Max, n)
+	if n < m.Min {
+		m.Min = n
+	}
+	if n > m.Max {
+		m.Max = n
+	}
 }

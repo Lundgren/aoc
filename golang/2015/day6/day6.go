@@ -53,13 +53,7 @@ func part1(lines []string) int {
 		})
 	}
 
-	turnedOn := 0
-	for _, v := range g.State {
-		if v == 1 {
-			turnedOn++
-		}
-	}
-	return turnedOn
+	return g.Sum()
 }
 
 func part2(lines []string) int {
@@ -80,11 +74,7 @@ func part2(lines []string) int {
 		})
 	}
 
-	brightness := 0
-	for _, v := range g.State {
-		brightness += v
-	}
-	return brightness
+	return g.Sum()
 }
 
 func parse(s string) instruction {

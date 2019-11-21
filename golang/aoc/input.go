@@ -2,6 +2,7 @@ package aoc
 
 import (
 	"io/ioutil"
+	"regexp"
 	"strings"
 )
 
@@ -10,6 +11,7 @@ type Input interface {
 	Lines() []string
 	Scanner() *Scanner
 	Sequence() *Sequence
+	Regexp(pattern string) []map[string]string
 }
 
 type input struct {
@@ -40,4 +42,24 @@ func (i input) Scanner() *Scanner {
 
 func (i input) Sequence() *Sequence {
 	return NewSequence(i.input)
+}
+
+func (i input) Regexp(pattern string) []map[string]string {
+	r := regexp.MustCompile(pattern)
+	res := []map[string]string{}
+	for _, l := range i.Lines() {
+		match := r.FindStringSubmatch(l)
+
+		m := map[string]string{}
+		for i, name := range r.SubexpNames() {
+			if i > 0 && i <= len(match) {
+				m[name] = match[i]
+			}
+		}
+
+		Log("regexpInput", "%v from '%s'", m, l)
+		res = append(res, m)
+	}
+
+	return res
 }

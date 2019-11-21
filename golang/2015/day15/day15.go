@@ -58,5 +58,5 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 		return score[0] * score[1] * score[2] * score[3]
 	})
 
-	return part1, part2
+	return part1.Max, part2.Max
 }
