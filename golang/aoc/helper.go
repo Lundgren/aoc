@@ -97,11 +97,25 @@ func MergeMaps(maps ...map[string]int) map[string]int {
 	return res
 }
 
-func IntMap(s string) map[string]int {
+func IntMap(s, splitter string) map[string]int {
 	res := map[string]int{}
 	for _, l := range strings.Split(s, "\n") {
-		p := strings.Split(l, ":")
+		p := strings.Split(l, splitter)
 		res[strings.TrimSpace(p[0])] = ParseInt(p[1])
+	}
+	return res
+}
+
+func StringSliceMap(s, splitter string) map[string][]string {
+	res := map[string][]string{}
+	for _, l := range strings.Split(s, "\n") {
+		p := strings.Split(l, splitter)
+		r, ok := res[strings.TrimSpace(p[0])]
+		if !ok {
+			r = []string{}
+		}
+		r = append(r, strings.TrimSpace(p[1]))
+		res[strings.TrimSpace(p[0])] = r
 	}
 	return res
 }

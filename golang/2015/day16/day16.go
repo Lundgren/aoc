@@ -17,7 +17,7 @@ vizslas: 0
 goldfish: 5
 trees: 3
 cars: 2
-perfumes: 1`)
+perfumes: 1`, ": ")
 
 func Solve(in aoc.Input) (interface{}, interface{}) {
 	part1, part2 := "", ""

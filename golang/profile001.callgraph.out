@@ -1,0 +1,195 @@
+positions: instr line
+events: cpu(ms)
+
+ob=
+fl=(1) /Users/andy/src/aoc/golang/2015/day20/day20.go
+fn=(1) aoc/2015/day20.Solve
+0x10ff234 20 180
+
+ob=
+fl=(2) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/sys_darwin.go
+fn=(2) runtime.usleep
+-752819 228 160
+
+ob=
+fl=(2)
+fn=(3) runtime.nanotime
++198 248 70
+
+ob=
+fl=(1)
+fn=(1)
++752884 33 70
+-35 32 50
+-216 22 30
+-4 20 20
+-12 20 10
++26 23 10
++203 32 10
+
+ob=
+fl=(3) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/mgc.go
+fn=(4) runtime.gcBgMarkWorker
+-936489 1900 0
+cfl=(4) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/asm_amd64.s
+cfn=(5) runtime.systemstack
+calls=0 -700544 370
+* * 70
+
+ob=
+fl=(5) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/mgcmark.go
+fn=(6) runtime.markroot
++9558 202 0
+cfl=(5)
+cfn=(7) runtime.markroot.func1
+calls=0 +226672 221
+* * 230
+
+ob=
+fl=(5)
+fn=(8) runtime.gcDrain
++6253 915 0
+cfl=(5)
+cfn=(6)
+calls=0 * 202
+* * 230
+
+ob=
+fl=(6) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/proc.go
+fn=(9) runtime.main
++59694 203 0
+cfl=(7) /Users/andy/src/aoc/golang/main.go
+cfn=(10) main.main
+calls=0 +1027915 31
+* * 380
+
+ob=
+fl=(6)
+fn=(11) runtime.scang
++8430 923 0
+cfl=(8) /usr/local/Cellar/go/1.13.4/libexec/src/runtime/os_darwin.go
+cfn=(12) runtime.osyield
+calls=0 +8442 312
+* * 160
+
+ob=
+fl=(8)
+fn=(12)
++12 312 0
+cfl=(2)
+cfn=(2)
+calls=0 +99510 228
+* * 160
+
+ob=
+fl=(6)
+fn=(11)
++5 924 0
+cfl=(2)
+cfn=(3)
+calls=0 +99696 248
+* * 70
+
+ob=
+fl=(6)
+fn=(13) runtime.mstart
++2836 1146 0
+cfl=(4)
+cfn=(5)
+calls=0 +151993 370
+* * 160
+
+ob=
+fl=(3)
+fn=(14) runtime.gcBgMarkWorker.func2
++139706 1936 0
+cfl=(5)
+cfn=(8)
+calls=0 -70977 915
+* * 230
+
+ob=
+fl=(5)
+fn=(7)
++178 221 0
+cfl=(6)
+cfn=(11)
+calls=0 -142559 923
+* * 160
+cfl=(6)
+cfn=(11)
+calls=0 -142542 924
+* * 70
+
+ob=
+fl=(4)
+fn=(5)
++9273 370 0
+cfl=(3)
+cfn=(14)
+calls=0 -178 1936
+* * 230
+
+ob=
+fl=(9) /Users/andy/src/aoc/golang/aoc/runner.go
+fn=(15) aoc/aoc.solve
++567141 82 0
+cfl=(9)
+cfn=(16) aoc/aoc.wrap.func1
+calls=0 +572663 105
+* * 380
+
+ob=
+fl=(9)
+fn=(16)
++5522 105 0
+cfl=(1)
+cfn=(1)
+calls=0 +133178 20
+* * 180
+cfl=(1)
+cfn=(1)
+calls=0 +133441 33
+* * 70
+cfl=(1)
+cfn=(1)
+calls=0 +133406 32
+* * 50
+cfl=(1)
+cfn=(1)
+calls=0 +133190 22
+* * 30
+cfl=(1)
+cfn=(1)
+calls=0 +133186 20
+* * 20
+cfl=(1)
+cfn=(1)
+calls=0 +133174 20
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 +133200 23
+* * 10
+cfl=(1)
+cfn=(1)
+calls=0 +133403 32
+* * 10
+
+ob=
+fl=(7)
+fn=(10)
++235118 31 0
+cfl=(9)
+cfn=(17) aoc/aoc.(*Runner).RunLatest
+calls=0 +235309 41
+* * 380
+
+ob=
+fl=(9)
+fn=(17)
++191 41 0
+cfl=(9)
+cfn=(15)
+calls=0 -240640 82
+* * 380
