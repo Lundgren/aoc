@@ -14,6 +14,8 @@ import (
 	"aoc/2015/day19"
 	"aoc/2015/day2"
 	"aoc/2015/day20"
+	"aoc/2015/day21"
+	"aoc/2015/day22"
 	"aoc/2015/day3"
 	"aoc/2015/day4"
 	"aoc/2015/day5"
@@ -45,4 +47,6 @@ func Register(r *aoc.Runner) {
 	r.Register(2015, 18, day18.Examples, day18.Solve, day18.CorrectAnswers)
 	r.Register(2015, 19, day19.Examples, day19.Solve, day19.CorrectAnswers)
 	r.Register(2015, 20, day20.Examples, day20.Solve, day20.CorrectAnswers)
+	r.Register(2015, 21, day21.Examples, day21.Solve, day21.CorrectAnswers)
+	r.Register(2015, 22, day22.Examples, day22.Solve, day22.CorrectAnswers)
 }
