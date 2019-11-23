@@ -37,8 +37,20 @@ func (r *Runner) Register(year, day int, examples []Example, solverFn func(Input
 	})
 }
 
-func (r *Runner) RunLatest() {
-	solve(r.Problems[len(r.Problems)-1])
+func (r *Runner) RunLatestUnsolved() {
+	for i := len(r.Problems) - 1; i >= 0; i-- {
+		p := r.Problems[i]
+		if p.Answers[0] == "" || p.Answers[1] == "" {
+			path := fmt.Sprintf("%d/day%d/input.txt", p.Year, p.Day)
+			input := FromFile(path)
+			if !input.Empty() {
+				solve(p, input)
+				return
+			}
+		}
+	}
+
+	fmt.Println("No unsolved problems with input")
 }
 
 func (r *Runner) RunAll() {
@@ -46,14 +58,16 @@ func (r *Runner) RunAll() {
 
 	start := time.Now()
 	for _, p := range r.Problems {
-		quickSolve(p)
+		if p.Answers[0] != "" && p.Answers[1] != "" {
+			quickSolve(p)
+		}
 	}
 
 	elapsed := time.Since(start)
 	fmt.Printf("\nCompleted in %s\n", elapsed)
 }
 
-func solve(p Problem) {
+func solve(p Problem, input Input) {
 	fmt.Printf(">>> Running AoC %d day %d:\n\n", p.Year, p.Day)
 
 	failed := false
@@ -76,8 +90,6 @@ func solve(p Problem) {
 
 	fmt.Printf("Successfully ran %d examples\n", len(p.Examples))
 
-	path := fmt.Sprintf("%d/day%d/input.txt", p.Year, p.Day)
-	input := FromFile(path)
 	start := time.Now()
 	sol1, sol2 := p.SolverFn(input)
 	elapsed := time.Since(start)

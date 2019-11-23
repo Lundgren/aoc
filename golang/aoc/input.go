@@ -9,9 +9,11 @@ import (
 type Input interface {
 	String() string
 	Lines() []string
+	IntList() []int
 	Scanner() *Scanner
 	Sequence() *Sequence
 	Regexp(pattern string) []map[string]string
+	Empty() bool
 }
 
 type input struct {
@@ -34,6 +36,14 @@ func (i input) String() string {
 
 func (i input) Lines() []string {
 	return strings.Split(i.input, "\n")
+}
+
+func (i input) IntList() []int {
+	res := []int{}
+	for _, l := range i.Lines() {
+		res = append(res, ParseInt(l))
+	}
+	return res
 }
 
 func (i input) Scanner() *Scanner {
@@ -62,4 +72,8 @@ func (i input) Regexp(pattern string) []map[string]string {
 	}
 
 	return res
+}
+
+func (i input) Empty() bool {
+	return len(i.input) == 0
 }

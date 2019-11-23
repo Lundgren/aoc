@@ -28,7 +28,7 @@ func main() {
 	if *all {
 		runner.RunAll()
 	} else {
-		runner.RunLatest()
+		runner.RunLatestUnsolved()
 	}
 }
 

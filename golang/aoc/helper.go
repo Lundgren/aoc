@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+var INT_MAX = 1<<63 - 1
+
 func Check(err error) {
 	if err != nil {
 		panic(err)
@@ -72,6 +74,10 @@ func iterate(src interface{}, fn func(n int)) {
 		for _, val := range t {
 			fn(val)
 		}
+	case []string:
+		for _, val := range t {
+			fn(ParseInt(val))
+		}
 	default:
 		panic(fmt.Sprintf("iterate is not implemented for type %T", src))
 	}
@@ -125,7 +131,7 @@ type MinMaxer struct {
 }
 
 func NewMinMaxer() *MinMaxer {
-	return &MinMaxer{Min: 1<<63 - 1}
+	return &MinMaxer{Min: INT_MAX}
 }
 
 func (m *MinMaxer) Register(n int) {

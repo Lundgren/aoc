@@ -16,9 +16,11 @@ func SetDebug() {
 }
 
 func Log(tag, msg string, x ...interface{}) {
-	if debug && msgs[tag] < amountToLogPerTag {
-		m := fmt.Sprintf("> %s\n", msg)
-		fmt.Printf(m, x...)
+	if debug {
+		if tag == "" || msgs[tag] < amountToLogPerTag {
+			m := fmt.Sprintf("> %s\n", msg)
+			fmt.Printf(m, x...)
+		}
+		msgs[tag]++
 	}
-	msgs[tag]++
 }
