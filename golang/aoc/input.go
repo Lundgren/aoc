@@ -6,39 +6,29 @@ import (
 	"strings"
 )
 
-type Input interface {
-	String() string
-	Lines() []string
-	IntList() []int
-	Scanner() *Scanner
-	Sequence() *Sequence
-	Regexp(pattern string) []map[string]string
-	Empty() bool
-}
-
-type input struct {
+type Input struct {
 	input string
 }
 
 func FromFile(path string) Input {
 	buf, err := ioutil.ReadFile(path)
 	Check(err)
-	return input{input: string(buf)}
+	return Input{input: string(buf)}
 }
 
 func FromString(in string) Input {
-	return input{input: in}
+	return Input{input: in}
 }
 
-func (i input) String() string {
+func (i *Input) String() string {
 	return i.input
 }
 
-func (i input) Lines() []string {
+func (i *Input) Lines() []string {
 	return strings.Split(i.input, "\n")
 }
 
-func (i input) IntList() []int {
+func (i *Input) IntList() []int {
 	res := []int{}
 	for _, l := range i.Lines() {
 		res = append(res, ParseInt(l))
@@ -46,15 +36,19 @@ func (i input) IntList() []int {
 	return res
 }
 
-func (i input) Scanner() *Scanner {
+func (i *Input) Scanner() *Scanner {
 	return NewScanner(i.input)
 }
 
-func (i input) Sequence() *Sequence {
+func (i *Input) Sequence() *Sequence {
 	return NewSequence(i.input)
 }
 
-func (i input) Regexp(pattern string) []map[string]string {
+func (i *Input) Split(pattern string) []string {
+	return strings.Split(i.input, pattern)
+}
+
+func (i *Input) Regexp(pattern string) []map[string]string {
 	r := regexp.MustCompile(pattern)
 	res := []map[string]string{}
 	for _, l := range i.Lines() {
@@ -74,6 +68,6 @@ func (i input) Regexp(pattern string) []map[string]string {
 	return res
 }
 
-func (i input) Empty() bool {
+func (i *Input) Empty() bool {
 	return len(i.input) == 0
 }

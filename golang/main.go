@@ -2,6 +2,8 @@ package main
 
 import (
 	aoc2015 "aoc/2015"
+	aoc2016 "aoc/2016"
+	aoc2019 "aoc/2019"
 	"aoc/aoc"
 	"flag"
 	"os"
@@ -35,5 +37,7 @@ func main() {
 func setup() *aoc.Runner {
 	runner := aoc.NewRunner()
 	aoc2015.Register(&runner)
+	aoc2016.Register(&runner)
+	aoc2019.Register(&runner)
 	return &runner
 }

@@ -83,6 +83,9 @@ func solve(p Problem, input Input) {
 			failed = true
 			fmt.Printf("Error on example %d part 2: Expected '%s', Got '%s'. (input: '%s')\n", i, ex.Expected2, sol2, ex.Input)
 		}
+		if ex.Expected1 == "" && ex.Expected2 == "" && ex.Input != "" {
+			fmt.Println("Error: test with input but no expected solution")
+		}
 	}
 	if failed {
 		return
@@ -127,6 +130,10 @@ func toStr(v interface{}) string {
 		return strconv.Itoa(int(v))
 	case string:
 		return v
+	case []byte:
+		return string(v)
+	case []rune:
+		return string(v)
 	default:
 		panic(fmt.Sprintf("no match for type %T (%v)", v, v))
 	}

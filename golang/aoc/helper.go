@@ -40,6 +40,13 @@ func Min(values ...int) int {
 	return min
 }
 
+func Abs(val int) int {
+	if val < 0 {
+		return -val
+	}
+	return val
+}
+
 func GetMinMax(src interface{}) *MinMaxer {
 	m := NewMinMaxer()
 	iterate(src, func(n int) {
@@ -89,6 +96,14 @@ func Reverse(a []string) []string {
 		a[i], a[opp] = a[opp], a[i]
 	}
 	return a
+}
+
+func CountLetters(s string) map[rune]int {
+	res := map[rune]int{}
+	for _, l := range s {
+		res[l]++
+	}
+	return res
 }
 
 func MergeMaps(maps ...map[string]int) map[string]int {
