@@ -28,6 +28,17 @@ func (i *Input) Lines() []string {
 	return strings.Split(i.input, "\n")
 }
 
+func (i *Input) Columns() []string {
+	lines := i.Lines()
+	res := make([]string, len(lines[0]))
+	for _, l := range lines {
+		for i, ch := range l {
+			res[i] += string(ch)
+		}
+	}
+	return res
+}
+
 func (i *Input) IntList() []int {
 	res := []int{}
 	for _, l := range i.Lines() {

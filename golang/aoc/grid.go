@@ -52,6 +52,10 @@ func (g *Grid) String() string {
 	return sb.String()
 }
 
+func (g *Grid) Get(x, y int) int {
+	return g.State[y*g.Width+x]
+}
+
 func (g *Grid) UpdateStr(fromX, fromY, toX, toY string, fn Updater) {
 	g.Update(ParseInt(fromX), ParseInt(fromY), ParseInt(toX), ParseInt(toY), fn)
 }

@@ -1,5 +1,9 @@
 package aoc
 
+import (
+	"strings"
+)
+
 func CountUniquePairs(in string) int {
 	sc := NewScanner(in)
 	pairs := NewSet()
@@ -28,4 +32,37 @@ func CountLongestStraight(in string) int {
 	}
 
 	return length
+}
+
+// Returns the least common and the most common char from a string
+// On equal amount a random char will be returned
+func FindMinMaxCommonChar(in string) (minCh, maxCh rune) {
+	chars := map[rune]int{}
+	for _, ch := range in {
+		chars[ch]++
+	}
+
+	max, min := 0, 99999
+	for k, v := range chars {
+		if v > max {
+			maxCh = k
+			max = v
+		}
+		if v < min {
+			minCh = k
+			min = v
+		}
+	}
+
+	return minCh, maxCh
+}
+
+// Combine several strings into one separated by another string
+func Combine(in []string, separator string) string {
+	var sb strings.Builder
+	for _, s := range in {
+		sb.WriteString(s)
+		sb.WriteString(separator)
+	}
+	return sb.String()
 }

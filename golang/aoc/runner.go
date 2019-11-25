@@ -3,6 +3,7 @@ package aoc
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -134,6 +135,10 @@ func toStr(v interface{}) string {
 		return string(v)
 	case []rune:
 		return string(v)
+	case strings.Builder:
+		return v.String()
+	case fmt.Stringer:
+		return v.String()
 	default:
 		panic(fmt.Sprintf("no match for type %T (%v)", v, v))
 	}

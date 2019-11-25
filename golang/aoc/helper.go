@@ -98,14 +98,6 @@ func Reverse(a []string) []string {
 	return a
 }
 
-func CountLetters(s string) map[rune]int {
-	res := map[rune]int{}
-	for _, l := range s {
-		res[l]++
-	}
-	return res
-}
-
 func MergeMaps(maps ...map[string]int) map[string]int {
 	res := map[string]int{}
 
