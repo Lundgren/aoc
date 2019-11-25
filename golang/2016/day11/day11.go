@@ -68,7 +68,7 @@ const initEquipments = uint64(
 )
 
 type step struct {
-	equipment  []uint64
+	oldSteps   []uint64
 	equipments uint64
 	elevator   int
 	moves      int
@@ -76,10 +76,10 @@ type step struct {
 
 func Solve(in aoc.Input) (interface{}, interface{}) {
 	init := step{
-		equipment:  initEquipment,
+		oldSteps:   []uint64{initEquipments},
 		equipments: initEquipments,
 	}
-	fmt.Println(print(init))
+	// fmt.Println(print(init))
 	aoc.AStar(init, func(val interface{}, addStep aoc.AddStep) bool {
 		s := val.(step)
 		// fmt.Println("eval, ", s)
@@ -106,7 +106,11 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 					// fmt.Println("Adding +1 ", cost, valid)
 					if cost == 0 {
 						fmt.Printf("Found path+ %v \n%s\n", newStep, print(newStep))
-						// return true
+						// fmt.Println(newStep.oldSteps)
+						for i, st := range newStep.oldSteps {
+							fmt.Printf("Step %d\n%s\n", i, print2(st))
+						}
+						return true
 					}
 					if valid {
 						addStep(newStep, cost)
@@ -121,7 +125,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 		return false
 	})
 
-	return "", "" // !29 && !30
+	return "", "" // !29 && !30 && !70
 }
 
 func makeMove(s step, e1, e2 uint64, from, to int) (cost int, res step, valid bool) {
@@ -155,7 +159,23 @@ func makeMove(s step, e1, e2 uint64, from, to int) (cost int, res step, valid bo
 		cost += (len(floorMask) - floor - 1) * bits.OnesCount64(equipment)
 	}
 
+	old := make([]uint64, len(s.oldSteps))
+	// old = append(old, s.oldSteps...)
+	copy(old, s.oldSteps)
+	old = append(old, newEq)
+
+	//Safety check
+	f1 := (newEq & floorMask[0]) >> (row * 0)
+	f2 := (newEq & floorMask[1]) >> (row * 1)
+	f3 := (newEq & floorMask[2]) >> (row * 2)
+	f4 := (newEq & floorMask[3]) >> (row * 3)
+	if (f1&f2) > 0 || (f1&f3) > 0 || (f1&f4) > 0 || (f2&f4) > 0 || (f2&f4) > 0 || (f3&f4) > 0 {
+		fmt.Println("Found illegal move!!")
+		return 4, s, false
+	}
+
 	newStep := step{
+		oldSteps:   old,
 		equipments: newEq,
 		elevator:   to,
 		moves:      s.moves + 1,
@@ -167,28 +187,6 @@ func makeMove(s step, e1, e2 uint64, from, to int) (cost int, res step, valid bo
 }
 
 var usedMoves = map[uint64]bool{}
-
-func makeMoveOld(from step, e1, e2 uint64, elevatorDelta int) (cost int, s step, valid bool) {
-	newEq := copy(from.equipment)
-	newEq[from.elevator] = (from.equipment[from.elevator] &^ e1) &^ e2
-	newEq[from.elevator+elevatorDelta] = from.equipment[from.elevator+elevatorDelta] | e1 | e2
-	newStep := step{
-		equipment: newEq,
-		elevator:  from.elevator + elevatorDelta,
-		moves:     from.moves + 1,
-	}
-	// fmt.Printf("Moving %b & %b (%d) from \n%s\nResult:\n%s\n", e1, e2, elevatorDelta, print(from), print(newStep))
-	cost, valid = evaluate(newStep)
-	return cost, newStep, valid
-}
-
-func copy(b []uint64) []uint64 {
-	r := make([]uint64, len(b))
-	for i, eq := range b {
-		r[i] = eq
-	}
-	return r
-}
 
 func print(b step) string {
 	// return fmt.Sprintf("%10b\n%10b\n%10b\n%10b", b.equipment[3], b.equipment[2], b.equipment[1], b.equipment[0])
@@ -202,23 +200,4 @@ func print2(eq uint64) string {
 	f2 := eq & floorMask[1] >> (1 * row)
 	f1 := eq & floorMask[0]
 	return fmt.Sprintf("%10b\n%10b\n%10b\n%10b", f4, f3, f2, f1)
-}
-
-func evaluate(s step) (cost int, valid bool) {
-	// if s.elevator < 0 || s.elevator >= len(s.equipment) {
-	// 	return 0, false
-	// }
-	for floor, equipment := range s.equipment {
-		generators := equipment & genMask
-		chips := (equipment >> amount)
-		lonelyChip := chips &^ generators
-		// fmt.Printf("ev() floor %d, g: %b, c: %b, lonely: %b, invalid: %t\n", floor, generators, chips, lonelyChip, lonelyChip > 0 && generators > 0)
-		if lonelyChip > 0 && generators > 0 {
-			return 0, false
-		}
-
-		cost += (len(s.equipment) - floor) * bits.OnesCount64(equipment)
-	}
-
-	return cost, true
 }
