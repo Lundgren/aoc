@@ -1,7 +1,5 @@
 package aoc
 
-import "fmt"
-
 const BREAK = 1<<63 - 1
 
 // Optimize will generate x items up to 'max' size and provide them to the score function
@@ -38,35 +36,31 @@ type AStarState struct {
 
 // AStar will use A* to go through all added steps until the goal is found
 // Return true to indicate goal reached
-func AStar(initStep interface{}, fn func(step interface{}, addstepFn AddStep) bool) {
-	q := NewPriorityQueue(initStep)
+func AStar(initStep interface{}, fn func(step interface{}, addstepFn AddStep) bool) interface{} {
+	q := NewPriorityQueue()
+	q.Push(initStep, 0)
 
 	min := 999999
 
 	adder := func(s interface{}, cost int) {
-		if cost < min {
-			fmt.Printf("New record %d for %+v\n", cost, s)
+		if cost <= min {
+			// fmt.Printf("New record %d for %+v\n", cost, s)
 			min = cost
 		}
-		q.Push(s, BREAK-cost)
+		q.Push(s, MAX_PRIORITY-cost)
 	}
 
-	n := 0
-	// step := initStep
-	for {
-		n++
-		// if n == 2 {
-		// 	return
-		// }
-		if n%1000000 == 0 {
-			fmt.Printf("Ran %d times, %d step to evaluate\n", n, q.Len())
+	for q.Len() > 0 {
+		step, cost := q.Pop()
+		if cost == MAX_PRIORITY {
+			return step
 		}
-		// done := fn(step, adder)
-		done := fn(q.Pop(), adder)
+
+		done := fn(step, adder)
 		if done {
-			return
+			return step
 		}
-
-		// step = q.Pop()
 	}
+
+	return nil
 }

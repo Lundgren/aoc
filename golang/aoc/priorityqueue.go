@@ -4,17 +4,14 @@ import (
 	"container/heap"
 )
 
+const MAX_PRIORITY = 1<<63 - 1
+
 type PriorityQueue struct {
 	queue prioQueue
 }
 
-func NewPriorityQueue(init interface{}) *PriorityQueue {
-	q := make(prioQueue, 1)
-	// q := prioQueue{}
-	q[0] = &wrapper{
-		value:    init,
-		priority: 0,
-	}
+func NewPriorityQueue() *PriorityQueue {
+	q := prioQueue{}
 	heap.Init(&q)
 	return &PriorityQueue{
 		queue: q,
@@ -28,16 +25,15 @@ func (pq *PriorityQueue) Push(x interface{}, prio int) {
 	})
 }
 
-func (pq *PriorityQueue) Pop() interface{} {
-	// fmt.Println("pop()", pq)
+func (pq *PriorityQueue) Pop() (interface{}, int) {
 	wrap := heap.Pop(&pq.queue).(*wrapper)
-	return wrap.value
+	return wrap.value, wrap.priority
 }
+
 func (pq PriorityQueue) Len() int {
 	return pq.queue.Len()
 }
 
-// An Item is something we manage in a priority queue.
 type wrapper struct {
 	value    interface{}
 	priority int
@@ -63,13 +59,11 @@ func (pq prioQueue) Swap(i, j int) {
 }
 
 func (pq *prioQueue) Push(x interface{}) {
-	// fmt.Println("Push", len(*pq))
 	wrap := x.(*wrapper)
 	*pq = append(*pq, wrap)
 }
 
 func (pq *prioQueue) Pop() interface{} {
-	// fmt.Println("Pop", len(*pq))
 	old := *pq
 	n := len(old)
 	wrap := old[n-1]
