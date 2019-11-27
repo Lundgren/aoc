@@ -60,6 +60,18 @@ const initEquipments = uint64(
 		(thuGen|thuChip|pluGen|strGen)<<(row*0),
 )
 
+const initEquipments2 = uint64(
+	(proGen|proChip|rutGen|rutChip)<<(row*2) +
+		(pluChip|strChip)<<(row*1) +
+		(thuGen|thuChip|pluGen|strGen|eleGen|eleChip|dilGen|dilChip)<<(row*0),
+)
+
+const initEquipmentsExample = uint64(
+	// (proGen|proChip|rutGen|rutChip)<<(row*2) +
+	(thuGen|pluGen)<<(row*1) +
+		(thuChip|pluChip)<<(row*0),
+)
+
 type step struct {
 	oldSteps   []uint64
 	equipments uint64
@@ -71,6 +83,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	init := step{
 		oldSteps:   []uint64{initEquipments},
 		equipments: initEquipments,
+		// equipments: initEquipmentsExample,
 	}
 	// fmt.Println(print(init))
 	aoc.AStar(init, func(val interface{}, addStep aoc.AddStep) bool {
@@ -140,26 +153,44 @@ func makeMove(s step, eq uint64, from, to uint64) (cost int, res step, valid boo
 	// newEq := s.equipments &^ ((e1 | e2) << (row * from)) // Remove from floor 'from'
 	// newEq = newEq | ((e1 | e2) << (row * to))            // Add to floor 'to'
 
-	if moves := usedMoves[newState]; moves > 2 { //|| moves < s.moves {
+	if moves := usedMoves[newState|(to<<row*5)]; moves > 1 { //|| moves < s.moves {
+		// if moves := usedMoves[newState|(to<<row*5)]; moves < s.moves {
 		// fmt.Printf("OLD:\n%s\n", print2(newEq))
 		return 2, s, false
 	}
-	usedMoves[newState]++ // = s.moves + 1
+	// usedMoves[newState|(to<<row*5)] = s.moves + 1
+	usedMoves[newState|(to<<row*5)]++ // = s.moves + 1
+
+	// if from > to {
+	// 	emptyBelow := true
+	// 	for f := int(to); f >= 0; f-- {
+	// 		// fmt.Println("trying", f)
+	// 		emptyBelow = emptyBelow && s.equipments&floorMask[f] == 0
+	// 	}
+	// 	if emptyBelow {
+	// 		// fmt.Printf("%d/%d - %40b\n", usedMoves[newState|(to<<row*5)], len(usedMoves), newState|(to<<row*5))
+	// 		// fmt.Printf("Don't move from %d to %d \n%s\n", from, to, print2(newState))
+	// 		return 5, s, false
+	// 	}
+	// }
 
 	// Validate and calculate heuristics
+	//TODO: Enough to check 'to' & 'from' floor..
 	for floor, mask := range floorMask {
 		floorEq := (newState & mask) >> uint64(row*floor)
 		generators := floorEq & genMask
 		chips := (floorEq >> amount)
 		lonelyChip := chips &^ generators
-		// fmt.Printf("ev() floor %d, e: %14b g: %7b, c: %7b, lonely: %7b, invalid: %t\n", floor, floorEq, generators, chips, lonelyChip, lonelyChip > 0 && generators > 0)
+		if floor == int(to) {
+			// fmt.Printf("ev() floor %d, e: %14b g: %7b, c: %7b, lonely: %7b, invalid: %t\n", floor, floorEq, generators, chips, lonelyChip, lonelyChip > 0 && generators > 0)
+		}
 		if lonelyChip > 0 && generators > 0 {
 			// fmt.Printf("Eq %b, Gen %b, Chi %b, Lon %b\n", equipment, generators, chips, lonelyChip)
 			// fmt.Printf("invalid to move %b from %d to %d 1.\n%s\n\n", e1|e2, from, to, print2(s.equipments))
 			return 3, s, false
 		}
 
-		cost += (len(floorMask) - floor - 1) * bits.OnesCount64(floorEq) * 5
+		cost += (len(floorMask) - floor - 1) * bits.OnesCount64(floorEq) //* 5
 	}
 
 	old := make([]uint64, len(s.oldSteps))
