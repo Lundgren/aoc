@@ -2,10 +2,6 @@ package day4
 
 import (
 	"aoc/aoc"
-	"crypto/md5"
-	"encoding/hex"
-	"io"
-	"strconv"
 	"strings"
 )
 
@@ -21,7 +17,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	i1 := 0
 	for {
 		i1++
-		if strings.HasPrefix(hash(s, i1), "00000") {
+		if strings.HasPrefix(aoc.FastMd5(s, i1, 1), "00000") {
 			break
 		}
 	}
@@ -29,17 +25,10 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	i2 := 0
 	for {
 		i2++
-		if strings.HasPrefix(hash(s, i2), "000000") {
+		if strings.HasPrefix(aoc.FastMd5(s, i2, 1), "000000") {
 			break
 		}
 	}
 
 	return i1, i2
-}
-
-func hash(in string, n int) string {
-	h := md5.New()
-	_, err := io.WriteString(h, in+strconv.Itoa(n))
-	aoc.Check(err)
-	return hex.EncodeToString(h.Sum(nil))
 }
