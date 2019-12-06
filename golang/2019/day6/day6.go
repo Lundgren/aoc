@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var CorrectAnswers = []string{"", ""}
+var CorrectAnswers = []string{"162439", "367"}
 
 var Examples = []aoc.Example{
 	{Input: `COM)B
