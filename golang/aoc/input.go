@@ -41,8 +41,13 @@ func (i *Input) Columns() []string {
 
 func (i *Input) IntList() []int {
 	res := []int{}
-	for _, l := range i.Lines() {
-		res = append(res, ParseInt(l))
+	values := i.Lines()
+	if len(values) == 1 {
+		values = strings.Split(i.input, ",")
+	}
+
+	for _, v := range values {
+		res = append(res, ParseInt(v))
 	}
 	return res
 }
