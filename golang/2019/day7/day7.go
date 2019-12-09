@@ -22,13 +22,13 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 			return -1
 		}
 
-		input := 0
+		input := int64(0)
 		for t := 0; t < 5; t++ {
 			c := aoc.NewIntComputer(instr)
-			c.QueueInput(sequence[t], input)
+			c.QueueInput(int64(sequence[t]), input)
 			input = c.RunUntilHalt()
 		}
-		return input
+		return int(input)
 	})
 
 	part2 := aoc.Optimize2(5, 10, 5, func(sequence []int) int {
@@ -39,11 +39,11 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 		thrusters := []*aoc.IntComputer{}
 		for _, s := range sequence {
 			t := aoc.NewIntComputer(instr)
-			t.QueueInput(s)
+			t.QueueInput(int64(s))
 			thrusters = append(thrusters, t)
 		}
 
-		input := 0
+		input := int64(0)
 		for !allHalted(thrusters) {
 			for _, t := range thrusters {
 				t.QueueInput(input)
@@ -51,7 +51,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 			}
 		}
 
-		return input
+		return int(input)
 	})
 
 	return part1.Max, part2.Max

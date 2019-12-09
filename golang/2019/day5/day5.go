@@ -15,7 +15,7 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	return part1, part2
 }
 
-func run(input int, source []int) int {
+func run(input int64, source []int) int64 {
 	c := aoc.NewIntComputer(source)
 	c.QueueInput(input)
 	return c.RunUntilHalt()

@@ -129,6 +129,8 @@ func toStr(v interface{}) string {
 		return strconv.Itoa(v)
 	case uint16:
 		return strconv.Itoa(int(v))
+	case int64:
+		return fmt.Sprintf("%d", v)
 	case string:
 		return v
 	case []byte:
