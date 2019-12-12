@@ -1,5 +1,9 @@
 package aoc
 
+import (
+	"math"
+)
+
 type IntComputer struct {
 	Data       []int64
 	Inputs     []int64
@@ -50,8 +54,8 @@ func (c *IntComputer) RunUntilHalt() int64 {
 }
 
 func (c *IntComputer) RunUntilOutput() int64 {
-	current := c.Output
-	for !c.Halted && c.Output == current {
+	c.Output = math.MaxInt64
+	for !c.Halted && c.Output == math.MaxInt64 {
 		c.step()
 	}
 	return c.Output
