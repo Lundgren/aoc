@@ -46,6 +46,10 @@ func (c *IntComputer) QueueInput(inputs ...int64) {
 	c.Inputs = append(c.Inputs, inputs...)
 }
 
+func (c *IntComputer) SetInput(input int64) {
+	c.Inputs = []int64{input}
+}
+
 func (c *IntComputer) RunUntilHalt() int64 {
 	for !c.Halted {
 		c.step()

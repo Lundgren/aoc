@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -56,6 +57,13 @@ func (g *Grid) Get(x, y int) int {
 	return g.State[y*g.Width+x]
 }
 
+func (g *Grid) Set(x, y, val int) {
+	if (y*g.Width + x) < 0 {
+		fmt.Println("Why", x, y, val)
+	}
+	g.State[y*g.Width+x] = val
+}
+
 func (g *Grid) UpdateStr(fromX, fromY, toX, toY string, fn Updater) {
 	g.Update(ParseInt(fromX), ParseInt(fromY), ParseInt(toX), ParseInt(toY), fn)
 }
@@ -97,4 +105,16 @@ func (g *Grid) Neighbors(x, y int) []int {
 
 func (g *Grid) Sum() int {
 	return Sum(g.State)
+}
+
+func (g *Grid) Draw(markers map[int]byte) string {
+	var sb strings.Builder
+	for y := 0; y < g.Height; y++ {
+		for x := 0; x < g.Width; x++ {
+			pos := y*g.Width + x
+			sb.WriteByte(markers[g.State[pos]])
+		}
+		sb.WriteByte('\n')
+	}
+	return sb.String()
 }
