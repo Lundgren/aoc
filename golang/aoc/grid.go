@@ -1,7 +1,6 @@
 package aoc
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -58,9 +57,6 @@ func (g *Grid) Get(x, y int) int {
 }
 
 func (g *Grid) Set(x, y, val int) {
-	if (y*g.Width + x) < 0 {
-		fmt.Println("Why", x, y, val)
-	}
 	g.State[y*g.Width+x] = val
 }
 
