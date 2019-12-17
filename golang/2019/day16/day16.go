@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var CorrectAnswers = []string{"", ""}
+var CorrectAnswers = []string{"49254779", "55078585"}
 
 var Examples = []aoc.Example{
 	// {Input: "12345678", Expected1: "01029498", Expected2: ""},

@@ -1,14 +1,10 @@
 package aoc
 
-import (
-	"math"
-)
-
 type IntComputer struct {
 	Data       []int64
 	Inputs     []int64
+	Outputs    []int64
 	Halted     bool
-	Output     int64
 	pc         int64
 	baseOffset int64
 	lastInput  int64
@@ -54,15 +50,15 @@ func (c *IntComputer) RunUntilHalt() int64 {
 	for !c.Halted {
 		c.step()
 	}
-	return c.Output
+	return c.Outputs[len(c.Outputs)-1]
 }
 
 func (c *IntComputer) RunUntilOutput() int64 {
-	c.Output = math.MaxInt64
-	for !c.Halted && c.Output == math.MaxInt64 {
+	outputs := len(c.Outputs)
+	for !c.Halted && outputs == len(c.Outputs) {
 		c.step()
 	}
-	return c.Output
+	return c.Outputs[len(c.Outputs)-1]
 }
 
 func (c *IntComputer) step() {
@@ -80,7 +76,7 @@ func (c *IntComputer) step() {
 		c.set(p1, c.nextInput())
 		c.pc += 2
 	case instrOutput:
-		c.Output = v1
+		c.Outputs = append(c.Outputs, v1)
 		c.pc += 2
 	case instrJumpIfTrue:
 		if v1 != 0 {
