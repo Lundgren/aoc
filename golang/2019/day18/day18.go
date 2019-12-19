@@ -97,9 +97,14 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 			return true
 		}
 		n++
-		// if n == 5000000 {
-		// 	return true
-		// }
+		if n == 5000000 {
+			return true
+		}
+
+		aoc.Bfs(nil, func(step interface{}, bfsAdder func(interface{})) bool {
+
+			return false
+		})
 
 		addIfValid(-1, 0, st, visited, addstepFn) //left
 		addIfValid(1, 0, st, visited, addstepFn)  //right
@@ -111,6 +116,48 @@ func Solve(in aoc.Input) (interface{}, interface{}) {
 	// part1 := st.(state)
 
 	return part1, ""
+}
+
+func (s *state) get(dX, dY int) (byte, bool) {
+	x, y := s.pos%s.width+dX, s.pos/s.width+dY
+	if x >= 0 && x < s.width &&
+		y >= 0 && y < len(s.vault)/s.width {
+		tile := s.vault[y*s.width+x]
+		if tile >= 'A' && tile <= 'Z' {
+			return tile, s.keys.canOpen(tile)
+		}
+
+		return tile, tile != '#'
+	}
+	return '#', false
+}
+
+func (s *state) isValid(dX, dY int) bool {
+	x, y := s.pos%s.width+dX, s.pos/s.width+dY
+	if x >= 0 && x < s.width &&
+		y >= 0 && y < len(s.vault)/s.width {
+		tile := s.vault[y*s.width+x]
+		if tile >= 'A' && tile <= 'Z' {
+			return s.keys.canOpen(tile)
+		}
+
+		return tile != '#'
+	}
+	return false
+}
+
+func (s *state) isKey(dX, dY int) bool {
+	x, y := s.pos%s.width+dX, s.pos/s.width+dY
+	if x >= 0 && x < s.width &&
+		y >= 0 && y < len(s.vault)/s.width {
+		tile := s.vault[y*s.width+x]
+		if tile >= 'a' && tile <= 'z' {
+			return s.keys.canOpen(tile)
+		}
+
+		return tile != '#'
+	}
+	return false
 }
 
 func addIfValid(dX, dY int, st state, visited map[string]bool, addstepFn aoc.AddStep) {
@@ -169,7 +216,13 @@ func cost(st state) int {
 }
 
 func key(st state) string {
-	return fmt.Sprintf("%d-%s-%s", st.pos, st.keys.String(), st.vault)
+	var sb strings.Builder
+	sb.WriteByte(byte(st.pos % 255))
+	sb.WriteByte(byte(st.pos / 255))
+	sb.WriteString(st.keys.found)
+	// sb.WriteString(st.vault)
+	return sb.String()
+	// return fmt.Sprintf("%d-%s-%s", st.pos, st.keys.String(), st.vault)
 }
 
 func (k *keys) canOpen(door byte) bool {

@@ -70,3 +70,23 @@ func AStar(initStep interface{}, fn func(step interface{}, addstepFn AddStep) bo
 
 	return nil
 }
+
+func Bfs(initStep interface{}, fn func(step interface{}, addStepFn func(interface{})) bool) interface{} {
+	var q []interface{}
+
+	adder := func(s interface{}) {
+		q = append(q, s)
+	}
+
+	for len(q) > 0 {
+		done := fn(q[0], adder)
+		if done {
+			return q[0]
+		}
+
+		q[0] = nil
+		q = q[1:]
+	}
+
+	return nil
+}
