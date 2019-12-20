@@ -1,13 +1,17 @@
 package aoc
 
 type IntComputer struct {
+	State     IntComputerState
+	Inputs    []int64
+	Outputs   []int64
+	Halted    bool
+	lastInput int64
+}
+
+type IntComputerState struct {
 	Data       []int64
-	Inputs     []int64
-	Outputs    []int64
-	Halted     bool
 	pc         int64
 	baseOffset int64
-	lastInput  int64
 }
 
 const (
@@ -34,8 +38,18 @@ func NewIntComputer(instructions []int) *IntComputer {
 		d[i] = int64(v)
 	}
 	return &IntComputer{
-		Data: d,
+		State: IntComputerState{
+			Data: d,
+		},
 	}
+}
+
+func (c *IntComputer) SaveState() IntComputerState {
+	return c.State
+}
+
+func (c *IntComputer) LoadState(state IntComputerState) {
+	c.State = state
 }
 
 func (c *IntComputer) QueueInput(inputs ...int64) {
@@ -68,27 +82,27 @@ func (c *IntComputer) step() {
 	switch instr {
 	case instrAdd:
 		c.set(p3, v1+v2)
-		c.pc += 4
+		c.State.pc += 4
 	case instrMult:
 		c.set(p3, v1*v2)
-		c.pc += 4
+		c.State.pc += 4
 	case instrInput:
 		c.set(p1, c.nextInput())
-		c.pc += 2
+		c.State.pc += 2
 	case instrOutput:
 		c.Outputs = append(c.Outputs, v1)
-		c.pc += 2
+		c.State.pc += 2
 	case instrJumpIfTrue:
 		if v1 != 0 {
-			c.pc = v2
+			c.State.pc = v2
 		} else {
-			c.pc += 3
+			c.State.pc += 3
 		}
 	case instrJumpIfFalse:
 		if v1 == 0 {
-			c.pc = v2
+			c.State.pc = v2
 		} else {
-			c.pc += 3
+			c.State.pc += 3
 		}
 	case instrLessThan:
 		if v1 < v2 {
@@ -96,17 +110,17 @@ func (c *IntComputer) step() {
 		} else {
 			c.set(p3, 0)
 		}
-		c.pc += 4
+		c.State.pc += 4
 	case instrEquals:
 		if v1 == v2 {
 			c.set(p3, 1)
 		} else {
 			c.set(p3, 0)
 		}
-		c.pc += 4
+		c.State.pc += 4
 	case instrBaseOffset:
-		c.baseOffset += v1
-		c.pc += 2
+		c.State.baseOffset += v1
+		c.State.pc += 2
 	case instrHalt:
 		c.Halted = true
 	default:
@@ -115,21 +129,21 @@ func (c *IntComputer) step() {
 }
 
 func (c *IntComputer) getParams() (instr, p1, p2, p3 int64) {
-	instr, v := c.get(c.pc)%100, make([]int64, 3)
+	instr, v := c.get(c.State.pc)%100, make([]int64, 3)
 	if instr == instrHalt {
 		return
 	}
 
-	t := c.get(c.pc) / 10
+	t := c.get(c.State.pc) / 10
 	for offset := int64(1); offset <= 3; offset++ {
 		t = t / 10
 		switch t % 10 {
 		case paramPositional:
-			v[offset-1] = c.get(c.pc + offset)
+			v[offset-1] = c.get(c.State.pc + offset)
 		case paramImmediate:
-			v[offset-1] = c.pc + offset
+			v[offset-1] = c.State.pc + offset
 		case paramRelative:
-			v[offset-1] = c.baseOffset + c.get(c.pc+offset)
+			v[offset-1] = c.State.baseOffset + c.get(c.State.pc+offset)
 		}
 	}
 
@@ -137,18 +151,18 @@ func (c *IntComputer) getParams() (instr, p1, p2, p3 int64) {
 }
 
 func (c *IntComputer) get(pos int64) int64 {
-	if pos >= int64(len(c.Data)) {
+	if pos >= int64(len(c.State.Data)) {
 		return 0
 	}
-	return c.Data[pos]
+	return c.State.Data[pos]
 }
 
 func (c *IntComputer) set(pos, val int64) {
-	if pos >= int64(len(c.Data)) {
+	if pos >= int64(len(c.State.Data)) {
 		tmp := make([]int64, pos+1)
-		c.Data = append(c.Data[:len(c.Data)], tmp[len(c.Data):]...)
+		c.State.Data = append(c.State.Data[:len(c.State.Data)], tmp[len(c.State.Data):]...)
 	}
-	c.Data[pos] = val
+	c.State.Data[pos] = val
 }
 
 func (c *IntComputer) nextInput() int64 {
