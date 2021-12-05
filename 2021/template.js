@@ -2,7 +2,7 @@ const { inputStr, example, answers } = require('./helper.js');
 
 const testInput = ``;
 
-const func = (str) => {
+const func = (input) => {
   return 0;
 };
 

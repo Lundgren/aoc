@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 // Try to guess the input file based on the initial scripts name
 const readInput = () => {
@@ -13,11 +14,18 @@ const readInput = () => {
 module.exports.inputStr = readInput();
 
 let examplesFailed = false;
-module.exports.example = (actual, expected) => {
-  if (actual != expected) {
-    examplesFailed = true;
-    console.log(`Expected ${expected} but got ${actual}`);
-  }
+module.exports.utils = {
+  example: (actual, expected) => {
+    if (actual != expected) {
+      examplesFailed = true;
+      console.log(`Expected ${expected} but got ${actual}`);
+    }
+  },
+  printMatrix: (what, fn = (x) => x) => {
+    let res = what.map((row) => row.map((x) => fn(x)).join('')).join('\n');
+    const out = path.dirname(process.mainModule.filename);
+    fs.writeFileSync(out + '/temp.txt', res);
+  },
 };
 
 module.exports.answers = (part1, part2) => {

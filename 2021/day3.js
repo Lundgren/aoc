@@ -1,4 +1,4 @@
-const { inputStr, example, answers } = require('./helper.js');
+const { inputStr, utils, answers } = require('./helper.js');
 
 const testInput = `00100
 11110
@@ -57,10 +57,10 @@ const filterByCount = (str, filterFn) => {
   return reports[0];
 };
 
-example(diagnose(testInput), 198);
+utils.example(diagnose(testInput), 198);
 const part1 = diagnose(inputStr);
 
-example(diagnose2(testInput), 230);
+utils.example(diagnose2(testInput), 230);
 const part2 = diagnose2(inputStr);
 
 answers(part1, part2);
