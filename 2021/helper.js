@@ -26,6 +26,11 @@ module.exports.utils = {
     const out = path.dirname(process.mainModule.filename);
     fs.writeFileSync(out + '/temp.txt', res);
   },
+  printMatrixAppend: (what, title, fn = (x) => x) => {
+    let res = what.map((row) => row.map((x) => fn(x)).join('')).join('\n');
+    const out = path.dirname(process.mainModule.filename);
+    fs.appendFileSync(out + '/temp.txt', `${title}\n${res}\n\n`);
+  },
   permute: (inputArr) => {
     let result = [];
 
