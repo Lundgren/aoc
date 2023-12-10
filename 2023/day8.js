@@ -60,22 +60,6 @@ function leastCommonMultiple(cycles) {
 }
 
 const solution2 = (input) => {
-  // const [instructionStr, graphStr] = input.split("\n\n");
-  // const instructions = instructionStr.split("");
-
-  // const startNodes = [];
-  // const network = {};
-  // graphStr.split("\n").forEach((row) => {
-  //   const [from, left, right] = row
-  //     .replaceAll(" = (", ", ")
-  //     .replaceAll(")", "")
-  //     .split(", ");
-
-  //   network[from] = { L: left, R: right };
-  //   if (from.endsWith("A")) {
-  //     startNodes.push(from);
-  //   }
-  // });
   const [network, instructions] = parse(input);
   const startNodes = Object.keys(network).filter((n) => n.endsWith("A"));
 
