@@ -24,6 +24,14 @@ module.exports.Board = class Board {
 
   // Get the cell at a given row, col
   get(row, col) {
+    if (
+      row < 0 ||
+      row >= this.board.length ||
+      col < 0 ||
+      col >= this.board[0].length
+    ) {
+      return undefined;
+    }
     return this.board[row][col];
   }
 
