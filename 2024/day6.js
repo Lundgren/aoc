@@ -20,7 +20,7 @@ const DIRECTIONS = [
 ];
 
 const solution1 = (input) => {
-  let ans = 0;
+  let ans = 1;
   const board = new Board(input);
 
   let [r, c] = getStart(board);
@@ -39,9 +39,13 @@ const solution1 = (input) => {
     } else if (next === undefined) {
       inside = false;
     } else {
+      if (board.get(r, c) !== "X") {
+        board.set(r, c, "X");
+        ans++;
+      }
+
       r += dir[0];
       c += dir[1];
-      ans++;
     }
   }
 
@@ -59,7 +63,6 @@ const solution2 = (input) => {
       if (board.get(rr, cc) !== ".") {
         continue;
       }
-
       board.set(rr, cc, "#");
       if (isLoop(board, r, c)) {
         ans++;
