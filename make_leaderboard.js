@@ -18,6 +18,9 @@ function getTime(seconds) {
   if (seconds == 0) {
     return "-";
   }
+  if (seconds > 24 * 60 * 60) {
+    return `${Math.round(seconds / (24 * 60 * 60))} day(s)`;
+  }
 
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -106,22 +109,30 @@ outputMd += `| Rank | Name | Time to Star 2 | Time n-1 | Time n-2 |\n`;
 outputMd += `|------|------|----------------|----------|----------|\n`;
 
 const completedAll = Object.values(playerStar2Deltas).filter(
-  (p) => p.deltas.length == currentDay
+  (p) => p.deltas.length >= currentDay - 2
 );
-completedAll.sort((a, b) => a.tot - b.tot);
+completedAll.sort((a, b) => {
+  if (a.deltas.length === b.deltas.length) {
+    return a.tot - b.tot;
+  }
+  return b.deltas.length - a.deltas.length;
+});
 
 for (let i = 0; i < completedAll.length; i++) {
   const p = completedAll[i];
   p.deltas.sort((a, b) => a - b);
 
-  const gt = (arr) => {
-    const tot = arr.reduce((a, b) => a + b, 0);
+  const gt = (arr, count) => {
+    if (arr.length < count) {
+      return "-";
+    }
+    const tot = arr.slice(0, count).reduce((a, b) => a + b, 0);
     return getTime(tot);
   };
 
-  const t1 = gt(p.deltas);
-  const t2 = gt(p.deltas.slice(0, -1));
-  const t3 = gt(p.deltas.slice(0, -2));
+  const t1 = gt(p.deltas, currentDay);
+  const t2 = gt(p.deltas, currentDay - 1);
+  const t3 = gt(p.deltas, currentDay - 2);
 
   outputMd += `| ${i + 1} | ${p.name} | ${t1} | ${t2} | ${t3} |\n`;
 }
