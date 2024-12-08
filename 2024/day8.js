@@ -49,7 +49,6 @@ const solution2 = (input) => {
   const board = new Board(input);
   const antinodes = new Set();
 
-  console.log(board.width, board.height);
   for (let r = 0; r < board.width; r++) {
     for (let c = 0; c < board.height; c++) {
       const cell = board.get(r, c);
