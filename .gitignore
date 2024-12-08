@@ -2,4 +2,5 @@ out/
 .vscode/
 
 leaderboard.json
-leaderboard.md
+leaderboard*.md
+.env
