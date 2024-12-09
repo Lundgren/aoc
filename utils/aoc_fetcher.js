@@ -14,9 +14,13 @@ class AdventOfCodeFetcher {
     const url = `https://adventofcode.com/${year}/day/${day}/input`;
     const currentTime = new Date();
 
-    const releaseTime = new Date(Date.UTC(year, 11, day - 1, 5, 0, 0));
+    const releaseTime = new Date(Date.UTC(year, 11, day, 5, 0, 0));
     if (currentTime < releaseTime) {
       const waitTime = releaseTime - currentTime + 15000;
+      const sec = Math.floor(waitTime / 1000);
+      console.log(
+        `Input data for ${year} day ${day} will be available in ${sec} seconds.`
+      );
       await this.#sleep(waitTime);
     }
 
