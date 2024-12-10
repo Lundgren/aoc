@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-// const { TracedString } = require("./trace");
-const { LoggedString, setPrintLength } = require("./trace2");
+const { LoggedString, setPrintLength } = require("./trace");
 
 // Try to guess the input file based on the initial scripts name
 const dayInputFilePath = process.mainModule.filename.slice(0, -2) + "input";
