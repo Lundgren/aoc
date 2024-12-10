@@ -5,3 +5,6 @@ dev:
 
 dev-with-date:
 	node runner.js
+
+leaderboard:
+	node utils/make_leaderboard.js

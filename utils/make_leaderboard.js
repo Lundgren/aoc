@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const AdventOfCodeFetcher = require("./utils/aoc_fetcher");
-const { sessionCookie, leaderboardIds } = require("./utils/envvars");
+const AdventOfCodeFetcher = require("./aoc_fetcher");
+const { sessionCookie, leaderboardIds } = require("./envvars");
 
 const args = process.argv.slice(2);
 
