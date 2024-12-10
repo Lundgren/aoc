@@ -24,7 +24,7 @@ class AdventOfCodeFetcher {
       await this.#sleep(waitTime);
     }
 
-    return await this.#fetchData(url);
+    return await this.#fetchData(url, false);
   }
 
   async fetchLeaderboard(id, year) {
@@ -34,10 +34,10 @@ class AdventOfCodeFetcher {
       );
     }
     const url = `https://adventofcode.com/${year}/leaderboard/private/view/${id}.json`;
-    return this.#fetchData(url);
+    return this.#fetchData(url, true);
   }
 
-  #fetchData(url) {
+  #fetchData(url, isJson = false) {
     return new Promise((resolve, reject) => {
       const options = {
         headers: {
@@ -59,7 +59,13 @@ class AdventOfCodeFetcher {
             data += chunk;
           });
 
-          res.on("end", () => resolve(JSON.parse(data)));
+          res.on("end", () => {
+            if (isJson) {
+              resolve(JSON.parse(data));
+            } else {
+              resolve(data);
+            }
+          });
         })
         .on("error", (err) => reject(err));
     });
