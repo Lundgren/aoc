@@ -63,7 +63,7 @@ class AdventOfCodeFetcher {
             if (isJson) {
               resolve(JSON.parse(data));
             } else {
-              resolve(data);
+              resolve(data.trim());
             }
           });
         })

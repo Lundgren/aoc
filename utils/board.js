@@ -1,6 +1,9 @@
 module.exports.Board = class Board {
   constructor(input) {
-    this.board = input.split("\n").map((r) => r.split(""));
+    this.board = input
+      .trim()
+      .split("\n")
+      .map((r) => r.split(""));
   }
 
   get width() {
@@ -100,6 +103,15 @@ module.exports.Board = class Board {
       }
     }
     return neighbors;
+  }
+
+  isInside(row, col) {
+    return (
+      row >= 0 &&
+      row < this.board.length &&
+      col >= 0 &&
+      col < this.board[0].length
+    );
   }
 
   // Iterate over all cells in the board, calling fn(cell, row, col)
