@@ -1,0 +1,6 @@
+out/
+.vscode/
+
+leaderboard.json
+leaderboard*.md
+.env
