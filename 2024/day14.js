@@ -78,8 +78,8 @@ const solution2 = (input) => {
   });
 
   // Separate tests & input
-  let width = robots.length > 12 ? 101 : 11;
-  let height = robots.length > 12 ? 103 : 7;
+  let width = 101;
+  let height = 103;
 
   let maxPairs = 0;
   let s = 1;
