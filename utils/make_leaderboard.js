@@ -128,8 +128,8 @@ function printLeaderboard(data) {
   }
 
   outputMd += `## Star 2 Leaderboard\n`;
-  outputMd += `| Rank | Name | Time to Star 2 | Time n-1 | Time n-2 |\n`;
-  outputMd += `|------|------|----------------|----------|----------|\n`;
+  outputMd += `| Rank | Name | Time to Star 2 | Time n-1 | Time n-2 | Time n-3 | Time n-4 |\n`;
+  outputMd += `|------|------|----------------|----------|----------|----------|----------|\n`;
 
   const completedAll = Object.values(playerStar2Deltas).filter(
     (p) => p.deltas.length >= currentDay - 2
@@ -156,12 +156,16 @@ function printLeaderboard(data) {
     const t1 = gt(p.deltas, currentDay);
     const t2 = gt(p.deltas, currentDay - 1);
     const t3 = gt(p.deltas, currentDay - 2);
+    const t4 = gt(p.deltas, currentDay - 3);
+    const t5 = gt(p.deltas, currentDay - 4);
 
-    outputMd += `| ${i + 1} | ${p.name} | ${t1} | ${t2} | ${t3} |\n`;
+    outputMd += `| ${i + 1} | ${
+      p.name
+    } | ${t1} | ${t2} | ${t3} | ${t4} | ${t5} |\n`;
   }
 
   outputMd += `\n\n`;
-  outputMd += `*Column 3 is the total time taken between star 1 & 2 independent of start time. Columns 4 & 5 shows the same with the worst 1 & 2 days removed from the sum.*`;
+  outputMd += `*Column 3 is the total time taken between star 1 & 2 independent of start time. Columns 4-7 shows the same with the worst 1-4 days removed from the sum.*`;
 
   fs.writeFileSync(`leaderboard-${leaderboardId}.md`, outputMd);
 }
