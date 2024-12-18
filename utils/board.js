@@ -1,9 +1,13 @@
 module.exports.Board = class Board {
   constructor(input) {
-    this.board = input
-      .trim()
-      .split("\n")
-      .map((r) => r.split(""));
+    if (Array.isArray(input)) {
+      this.board = input;
+    } else {
+      this.board = input
+        .trim()
+        .split("\n")
+        .map((r) => r.split(""));
+    }
   }
 
   get width() {
