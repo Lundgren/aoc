@@ -127,6 +127,43 @@ module.exports.Board = class Board {
     });
   }
 
+  // Get the shortest path from start to each tile using BFS
+  costMap(fromRow, fromCol, impassableChar = "#") {
+    console.log(fromRow, fromCol);
+    const directions = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+    ];
+    const queue = [[fromRow, fromCol, 0]];
+    const costMap = {};
+    costMap[`${fromRow},${fromCol}`] = 0;
+
+    while (queue.length > 0) {
+      const [row, col, cost] = queue.shift();
+
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+        const newCost = cost + 1;
+
+        if (
+          this.get(newRow, newCol) !== undefined &&
+          this.get(newRow, newCol) !== impassableChar
+        ) {
+          const key = `${newRow},${newCol}`;
+          if (!(key in costMap) || newCost < costMap[key]) {
+            costMap[key] = newCost;
+            queue.push([newRow, newCol, newCost]);
+          }
+        }
+      }
+    }
+
+    return costMap;
+  }
+
   // Get a string representation of the board
   toString() {
     return this.board.map((row) => row.join("")).join("\n");
