@@ -108,7 +108,7 @@ function walk(board) {
     }
 
     // Prioritize the "Priority Queue"
-    pq.sort((a, b) => a.cost - b.cost);
+    pq.sort((a, b) => a[2] - b[2]);
   }
 
   return -1;
