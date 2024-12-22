@@ -65,8 +65,8 @@ function printLeaderboard(data) {
     const startTime = day1StartTime + (day - 1) * 24 * 60 * 60;
 
     outputMd += `## Day ${day}\n`;
-    outputMd += `| Rank | Name | Star 1 Time | Star 2 Time | Time After Winner | Star 1 -> Star 2 | Day Points | Total Points |\n`;
-    outputMd += `|------|------|-------------|-------------|-------------------|------------------|------------|--------------|\n`;
+    outputMd += `| Rank | Name | Star 1 Time | Star 2 Time | Time After Winner | Star 1 -> Star 2 | Day Points | Total Points | Star 2 time |\n`;
+    outputMd += `|------|------|-------------|-------------|-------------------|------------------|------------|--------------|-------------|\n`;
 
     const dayStats = [];
     for (const player of players) {
@@ -82,10 +82,14 @@ function printLeaderboard(data) {
           playerStar2Deltas[name] = playerStar2Deltas[name] || {
             name,
             tot: 0,
+            totAll: 0,
             deltas: [],
           };
           playerStar2Deltas[name].deltas.push(star2Delta);
           playerStar2Deltas[name].tot += star2Delta;
+          playerStar2Deltas[name].totAll += star2Delta;
+        } else if (playerStar2Deltas[name]) {
+          playerStar2Deltas[name].totAll = Infinity;
         }
 
         dayStats.push({
@@ -93,6 +97,7 @@ function printLeaderboard(data) {
           star1Time,
           star2Time,
           star2Delta,
+          star2Tot: playerStar2Deltas[name]?.totAll || Infinity,
         });
       }
     }
@@ -121,7 +126,7 @@ function printLeaderboard(data) {
         player.star1RelativeTime
       )} | ${getTime(player.star2Delta)} | ${
         player.star1Points + player.star2Points
-      } | ${playerPoints[player.name]} |\n`;
+      } | ${playerPoints[player.name]} | ${getTime(player.star2Tot)} |\n`;
     }
 
     outputMd += `\n\n`;
